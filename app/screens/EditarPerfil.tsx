@@ -124,6 +124,10 @@ export default function EditarPerfil() {
     router.push('/Perfil');
   };
 
+  const handleVoltar = () => {
+    router.back();
+  };
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -133,7 +137,7 @@ export default function EditarPerfil() {
         <View style={styles.box}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={handleCancelar}>
+            <TouchableOpacity style={styles.backButton} onPress={handleVoltar}>
               <FontAwesome5 name="arrow-left" size={20} color={COLORS.primary} />
             </TouchableOpacity>
             <Text style={styles.title}>Editar Perfil</Text>

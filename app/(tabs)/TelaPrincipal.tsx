@@ -77,7 +77,7 @@ export default function TelaPrincipal() {
         <View style={styles.additionalButtons}>
           <TouchableOpacity 
             style={styles.textButton}
-            onPress={() => router.push('/(tabs)/TelaPrincipal')}
+            onPress={() => router.push('/screens/ControleAmbiente')}
           >
             <Text style={styles.textButtonText}>Controle de Ambiente</Text>
           </TouchableOpacity>

@@ -71,7 +71,7 @@ export default function Sobre() {
   const router = useRouter();
 
   const abrirWebsite = () => {
-    Linking.openURL('https://www.greensync.com.br').catch(() => {
+    Linking.openURL('https://greensync-estufa.vercel.app').catch(() => {
       Alert.alert("Erro", "Não foi possível abrir o website");
     });
   };
@@ -103,25 +103,11 @@ export default function Sobre() {
   };
 
   const verTermosUso = () => {
-    Alert.alert(
-      "Termos de Uso",
-      "Os termos de uso e política de privacidade estarão disponíveis em breve em nosso website.",
-      [
-        { text: "Fechar", style: "cancel" },
-        { text: "Visitar Website", onPress: abrirWebsite }
-      ]
-    );
+    router.push('/screens/TermosUso')
   };
 
   const verPolíticaPrivacidade = () => {
-    Alert.alert(
-      "Política de Privacidade",
-      "Nossa política de privacidade estará disponível em breve. Valorizamos a segurança dos seus dados.",
-      [
-        { text: "Fechar", style: "cancel" },
-        { text: "Saber Mais", onPress: abrirWebsite }
-      ]
-    );
+    router.push('/screens/Politica')
   };
 
   // Dados dos recursos

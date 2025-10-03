@@ -74,22 +74,6 @@ export default function TabLayout() {
           ),
         }}
       />
-      
-      <Tabs.Screen
-        name="Perfil"
-        options={{
-          title: 'Perfil',
-          tabBarIcon: ({ color, focused }) => (
-            <FontAwesome5 
-              name="user" 
-              size={24} 
-              color={color} 
-              solid={focused}
-            />
-          ),
-        }}
-      />
-      
       <Tabs.Screen
         name="Sobre"
         options={{
@@ -97,6 +81,20 @@ export default function TabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <FontAwesome5 
               name="info-circle" 
+              size={24} 
+              color={color} 
+              solid={focused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="Perfil"
+        options={{
+          title: 'Perfil',
+          tabBarIcon: ({ color, focused }) => (
+            <FontAwesome5 
+              name="user" 
               size={24} 
               color={color} 
               solid={focused}
