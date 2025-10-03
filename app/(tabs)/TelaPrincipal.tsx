@@ -84,7 +84,7 @@ export default function TelaPrincipal() {
           
           <TouchableOpacity 
             style={styles.textButton}
-            onPress={() => router.push('/(tabs)/TelaPrincipal')}
+            onPress={() => router.push('/screens/Dashboard')}
           >
             <Text style={styles.textButtonText}>Dashboard</Text>
           </TouchableOpacity>
