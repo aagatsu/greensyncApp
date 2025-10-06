@@ -14,11 +14,12 @@ import {
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from '@/constants/Cores';
 import { TYPOGRAPHY } from '@/constants/Fontes';
+import { useTheme } from '@/context/ThemeContext';
 
 export default function AdicionarPlanta() {
   const router = useRouter();
+  const { colors } = useTheme();
 
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -74,36 +75,44 @@ export default function AdicionarPlanta() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]} // ATUALIZADO
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.box}>
-          <Text style={styles.title}>Adicionar Nova Planta</Text>
-          <Text style={styles.subtitle}>Preencha os dados da sua planta</Text>
+        <View style={[styles.box, { backgroundColor: colors.surface }]}> {/* ATUALIZADO */}
+          <Text style={[styles.title, { color: colors.primary }]}>Adicionar Nova Planta</Text> {/* ATUALIZADO */}
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Preencha os dados da sua planta</Text> {/* ATUALIZADO */}
 
           {/* Campo Nome */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Nome da Planta *</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>Nome da Planta *</Text> {/* ATUALIZADO */}
             <TextInput
-              style={styles.input}
+              style={[styles.input, { 
+                backgroundColor: colors.gray50, 
+                borderColor: colors.border,
+                color: colors.textPrimary 
+              }]} // ATUALIZADO
               placeholder="Ex: Manjericão, Hortelã..."
-              placeholderTextColor={COLORS.textDisabled}
+              placeholderTextColor={colors.textDisabled} // ATUALIZADO
               value={nome}
               onChangeText={setNome}
             />
             {nome.trim().length > 0 && (
-              <Text style={styles.charCount}>{nome.length}/50</Text>
+              <Text style={[styles.charCount, { color: colors.textDisabled }]}>{nome.length}/50</Text> // ATUALIZADO
             )}
           </View>
 
           {/* Campo Descrição */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Descrição *</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>Descrição *</Text> {/* ATUALIZADO */}
             <TextInput
-              style={[styles.input, styles.textArea]}
+              style={[styles.input, styles.textArea, { 
+                backgroundColor: colors.gray50, 
+                borderColor: colors.border,
+                color: colors.textPrimary 
+              }]} // ATUALIZADO
               placeholder="Descreva as características da planta..."
-              placeholderTextColor={COLORS.textDisabled}
+              placeholderTextColor={colors.textDisabled} // ATUALIZADO
               value={descricao}
               onChangeText={setDescricao}
               multiline
@@ -111,33 +120,36 @@ export default function AdicionarPlanta() {
               textAlignVertical="top"
             />
             {descricao.trim().length > 0 && (
-              <Text style={styles.charCount}>{descricao.length}/200</Text>
+              <Text style={[styles.charCount, { color: colors.textDisabled }]}>{descricao.length}/200</Text> // ATUALIZADO
             )}
           </View>
 
           {/* Seção de Imagem */}
           <View style={styles.imageSection}>
-            <Text style={styles.label}>Foto da Planta *</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>Foto da Planta *</Text> {/* ATUALIZADO */}
             
             {imagem ? (
               <View style={styles.imagePreviewContainer}>
                 <Image source={{ uri: imagem }} style={styles.previewImage} />
                 <TouchableOpacity 
-                  style={styles.changeImageButton}
+                  style={[styles.changeImageButton, { backgroundColor: colors.primary }]} // ATUALIZADO
                   onPress={escolherImagem}
                 >
-                  <FontAwesome5 name="sync" size={16} color={COLORS.white} />
-                  <Text style={styles.changeImageText}>Trocar Foto</Text>
+                  <FontAwesome5 name="sync" size={16} color={colors.white} /> {/* ATUALIZADO */}
+                  <Text style={[styles.changeImageText, { color: colors.white }]}>Trocar Foto</Text> {/* ATUALIZADO */}
                 </TouchableOpacity>
               </View>
             ) : (
               <TouchableOpacity 
-                style={styles.imageButton} 
+                style={[styles.imageButton, { 
+                  backgroundColor: colors.gray50, 
+                  borderColor: colors.borderLight 
+                }]} // ATUALIZADO
                 onPress={escolherImagem}
               >
-                <FontAwesome5 name="camera" size={24} color={COLORS.primaryLight} />
-                <Text style={styles.imageButtonText}>Selecionar Foto</Text>
-                <Text style={styles.imageButtonSubtext}>Toque para escolher uma imagem</Text>
+                <FontAwesome5 name="camera" size={24} color={colors.primaryLight} /> {/* ATUALIZADO */}
+                <Text style={[styles.imageButtonText, { color: colors.primaryLight }]}>Selecionar Foto</Text> {/* ATUALIZADO */}
+                <Text style={[styles.imageButtonSubtext, { color: colors.textDisabled }]}>Toque para escolher uma imagem</Text> {/* ATUALIZADO */}
               </TouchableOpacity>
             )}
           </View>
@@ -147,25 +159,28 @@ export default function AdicionarPlanta() {
             <TouchableOpacity 
               style={[
                 styles.saveButton, 
-                (!nome.trim() || !descricao.trim() || !imagem) && styles.saveButtonDisabled
+                { backgroundColor: colors.primary }, // ATUALIZADO
+                (!nome.trim() || !descricao.trim() || !imagem) && [styles.saveButtonDisabled, { backgroundColor: colors.gray400 }] // ATUALIZADO
               ]} 
               onPress={salvarPlanta}
               disabled={!nome.trim() || !descricao.trim() || !imagem}
             >
-              <FontAwesome5 name="check" size={16} color={COLORS.white} />
-              <Text style={styles.saveButtonText}>Salvar Planta</Text>
+              <FontAwesome5 name="check" size={16} color={colors.white} /> {/* ATUALIZADO */}
+              <Text style={[styles.saveButtonText, { color: colors.white }]}>Salvar Planta</Text> {/* ATUALIZADO */}
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={styles.cancelButton} 
+              style={[styles.cancelButton, { 
+                borderColor: colors.border 
+              }]} // ATUALIZADO
               onPress={() => router.back()}
             >
-              <Text style={styles.cancelButtonText}>Cancelar</Text>
+              <Text style={[styles.cancelButtonText, { color: colors.textSecondary }]}>Cancelar</Text> {/* ATUALIZADO */}
             </TouchableOpacity>
           </View>
 
           {/* Indicador de campos obrigatórios */}
-          <Text style={styles.requiredText}>* Campos obrigatórios</Text>
+          <Text style={[styles.requiredText, { color: colors.textDisabled }]}>* Campos obrigatórios</Text> {/* ATUALIZADO */}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -175,7 +190,6 @@ export default function AdicionarPlanta() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
     paddingTop: '15%',
   },
   scrollContent: {
@@ -183,11 +197,10 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   box: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 24,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -195,13 +208,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     marginBottom: 8,
     textAlign: "center",
   },
   subtitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textSecondary,
     marginBottom: 30,
     textAlign: "center",
   },
@@ -211,18 +222,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: COLORS.gray50,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textPrimary,
   },
   textArea: {
     height: 100,
@@ -230,7 +237,6 @@ const styles = StyleSheet.create({
   },
   charCount: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textDisabled,
     textAlign: "right",
     marginTop: 4,
   },
@@ -238,9 +244,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   imageButton: {
-    backgroundColor: COLORS.gray50,
     borderWidth: 2,
-    borderColor: COLORS.borderLight,
     borderStyle: 'dashed',
     borderRadius: 12,
     padding: 30,
@@ -250,12 +254,10 @@ const styles = StyleSheet.create({
   imageButtonText: {
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.primaryLight,
     marginTop: 8,
   },
   imageButtonSubtext: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textDisabled,
     marginTop: 4,
   },
   imagePreviewContainer: {
@@ -268,7 +270,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   changeImageButton: {
-    backgroundColor: COLORS.primaryLight,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
@@ -276,7 +277,6 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   changeImageText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 6,
@@ -285,7 +285,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   saveButton: {
-    backgroundColor: COLORS.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -293,16 +292,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   saveButtonDisabled: {
-    backgroundColor: COLORS.gray400,
+    // Cor movida para o style inline
   },
   saveButtonText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginLeft: 8,
@@ -312,16 +310,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   cancelButtonText: {
-    color: COLORS.textSecondary,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
   },
   requiredText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textDisabled,
     textAlign: "center",
     marginTop: 20,
   },

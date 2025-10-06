@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from '@/constants/Cores';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 // Interfaces para tipagem
@@ -44,7 +44,7 @@ const CustomSlider = ({
   min, 
   max, 
   step = 1,
-  color = COLORS.primary 
+  color 
 }: { 
   value: number;
   onValueChange: (value: number) => void;
@@ -53,11 +53,12 @@ const CustomSlider = ({
   step?: number;
   color?: string;
 }) => {
+  const { colors } = useTheme(); // NOVO HOOK
   const percentage = ((value - min) / (max - min)) * 100;
 
   return (
     <View style={styles.sliderContainer}>
-      <View style={styles.sliderTrack}>
+      <View style={[styles.sliderTrack, { backgroundColor: colors.gray300 }]}>
         <View 
           style={[
             styles.sliderFill,
@@ -67,21 +68,21 @@ const CustomSlider = ({
       </View>
       <View style={styles.sliderControls}>
         <TouchableOpacity 
-          style={styles.sliderButton}
+          style={[styles.sliderButton, { backgroundColor: colors.primary }]}
           onPress={() => onValueChange(Math.max(min, value - step))}
           disabled={value <= min}
         >
-          <FontAwesome5 name="minus" size={12} color={COLORS.textInverse} />
+          <FontAwesome5 name="minus" size={12} color={colors.textInverse} />
         </TouchableOpacity>
         
-        <Text style={styles.sliderValue}>{value}</Text>
+        <Text style={[styles.sliderValue, { color: colors.textPrimary }]}>{value}</Text>
         
         <TouchableOpacity 
-          style={styles.sliderButton}
+          style={[styles.sliderButton, { backgroundColor: colors.primary }]}
           onPress={() => onValueChange(Math.min(max, value + step))}
           disabled={value >= max}
         >
-          <FontAwesome5 name="plus" size={12} color={COLORS.textInverse} />
+          <FontAwesome5 name="plus" size={12} color={colors.textInverse} />
         </TouchableOpacity>
       </View>
     </View>
@@ -90,10 +91,12 @@ const CustomSlider = ({
 
 export default function ControleAmbiente() {
   const router = useRouter();
+  const { colors } = useTheme(); // NOVO HOOK
   
-const handleVoltar = () => {
+  const handleVoltar = () => {
     router.back();
   };
+
   // Estados dos parâmetros ambientais
   const [parametros, setParametros] = useState<ParametroControle[]>([
     {
@@ -104,7 +107,7 @@ const handleVoltar = () => {
       min: 18,
       max: 35,
       icone: 'thermometer-half',
-      cor: COLORS.error,
+      cor: colors.error,
       automatico: true
     },
     {
@@ -115,7 +118,7 @@ const handleVoltar = () => {
       min: 40,
       max: 90,
       icone: 'cloud',
-      cor: COLORS.info,
+      cor: colors.info,
       automatico: true
     },
     {
@@ -126,7 +129,7 @@ const handleVoltar = () => {
       min: 20,
       max: 80,
       icone: 'tint',
-      cor: COLORS.primary,
+      cor: colors.primary,
       automatico: false
     },
     {
@@ -137,7 +140,7 @@ const handleVoltar = () => {
       min: 0,
       max: 100,
       icone: 'sun',
-      cor: COLORS.warning,
+      cor: colors.warning,
       automatico: true
     }
   ]);
@@ -149,7 +152,7 @@ const handleVoltar = () => {
       nome: 'Iluminação LED',
       estado: true,
       icone: 'lightbulb',
-      cor: COLORS.warning,
+      cor: colors.warning,
       tipo: 'luz'
     },
     {
@@ -157,7 +160,7 @@ const handleVoltar = () => {
       nome: 'Ventilação',
       estado: false,
       icone: 'fan',
-      cor: COLORS.info,
+      cor: colors.info,
       tipo: 'ventilacao'
     },
     {
@@ -165,7 +168,7 @@ const handleVoltar = () => {
       nome: 'Sistema de Irrigação',
       estado: true,
       icone: 'tint',
-      cor: COLORS.primary,
+      cor: colors.primary,
       tipo: 'irrigacao'
     }
   ]);
@@ -230,35 +233,35 @@ const handleVoltar = () => {
 
   // Componente de Parâmetro
   const ParametroControle = ({ parametro }: { parametro: ParametroControle }) => (
-    <View style={styles.parametroCard}>
+    <View style={[styles.parametroCard, { backgroundColor: colors.gray50 }]}>
       <View style={styles.parametroHeader}>
         <View style={styles.parametroInfo}>
           <View style={[styles.parametroIcon, { backgroundColor: `${parametro.cor}20` }]}>
             <FontAwesome5 name={parametro.icone} size={20} color={parametro.cor} />
           </View>
           <View style={styles.parametroText}>
-            <Text style={styles.parametroNome}>{parametro.nome}</Text>
-            <Text style={styles.parametroValor}>
+            <Text style={[styles.parametroNome, { color: colors.textPrimary }]}>{parametro.nome}</Text>
+            <Text style={[styles.parametroValor, { color: colors.textPrimary }]}>
               {parametro.valor} {parametro.unidade}
             </Text>
           </View>
         </View>
         <View style={styles.controleAutomatico}>
-          <Text style={styles.controleTexto}>
+          <Text style={[styles.controleTexto, { color: colors.textSecondary }]}>
             {parametro.automatico ? 'Automático' : 'Manual'}
           </Text>
           <Switch
             value={parametro.automatico}
             onValueChange={() => alternarAutomatico(parametro.id)}
-            trackColor={{ false: COLORS.gray400, true: `${parametro.cor}80` }}
-            thumbColor={parametro.automatico ? parametro.cor : COLORS.gray200}
+            trackColor={{ false: colors.gray400, true: `${parametro.cor}80` }}
+            thumbColor={parametro.automatico ? parametro.cor : colors.gray200}
           />
         </View>
       </View>
 
       {!parametro.automatico && (
-        <View style={styles.controleManual}>
-          <Text style={styles.rangeText}>
+        <View style={[styles.controleManual, { borderTopColor: colors.borderLight }]}>
+          <Text style={[styles.rangeText, { color: colors.textSecondary }]}>
             {parametro.min}{parametro.unidade} - {parametro.max}{parametro.unidade}
           </Text>
           <CustomSlider
@@ -276,23 +279,24 @@ const handleVoltar = () => {
 
   // Componente de Dispositivo
   const DispositivoControle = ({ dispositivo }: { dispositivo: Dispositivo }) => (
-    <View style={styles.dispositivoCard}>
+    <View style={[styles.dispositivoCard, { backgroundColor: colors.gray50 }]}>
       <View style={styles.dispositivoInfo}>
         <View style={[styles.dispositivoIcon, { backgroundColor: `${dispositivo.cor}20` }]}>
           <FontAwesome5 
             name={dispositivo.icone} 
             size={20} 
-            color={dispositivo.estado ? dispositivo.cor : COLORS.textDisabled} 
+            color={dispositivo.estado ? dispositivo.cor : colors.textDisabled} 
           />
         </View>
         <View style={styles.dispositivoText}>
           <Text style={[
             styles.dispositivoNome,
-            !dispositivo.estado && styles.dispositivoDesligado
+            { color: colors.textPrimary },
+            !dispositivo.estado && [styles.dispositivoDesligado, { color: colors.textDisabled }]
           ]}>
             {dispositivo.nome}
           </Text>
-          <Text style={styles.dispositivoEstado}>
+          <Text style={[styles.dispositivoEstado, { color: colors.textSecondary }]}>
             {dispositivo.estado ? 'Ligado' : 'Desligado'}
           </Text>
         </View>
@@ -300,39 +304,42 @@ const handleVoltar = () => {
       <Switch
         value={dispositivo.estado}
         onValueChange={() => alternarDispositivo(dispositivo.id)}
-        trackColor={{ false: COLORS.gray400, true: `${dispositivo.cor}80` }}
-        thumbColor={dispositivo.estado ? dispositivo.cor : COLORS.gray200}
+        trackColor={{ false: colors.gray400, true: `${dispositivo.cor}80` }}
+        thumbColor={dispositivo.estado ? dispositivo.cor : colors.gray200}
       />
     </View>
   );
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.box}>
+        <View style={[styles.box, { backgroundColor: colors.surface }]}>
           {/* Header */}
           <View style={styles.header}>
-              <TouchableOpacity style={styles.backButton} onPress={handleVoltar}>
-              <FontAwesome5 name="arrow-left" size={20} color="#277C5C" />
-              </TouchableOpacity>
-            <Text style={styles.title}>Controle Ambiental</Text>
-            <Text style={styles.subtitle}>Gerencie os parâmetros da sua estufa</Text>
+            <TouchableOpacity 
+              style={[styles.backButton, { borderColor: colors.border }]} 
+              onPress={handleVoltar}
+            >
+              <FontAwesome5 name="arrow-left" size={20} color={colors.primary} />
+            </TouchableOpacity>
+            <Text style={[styles.title, { color: colors.primary }]}>Controle Ambiental</Text>
+            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Gerencie os parâmetros da sua estufa</Text>
           </View>
 
           {/* Status Geral */}
-          <View style={styles.statusContainer}>
+          <View style={[styles.statusContainer, { backgroundColor: colors.gray50 }]}>
             <View style={styles.statusItem}>
-              <FontAwesome5 name="check-circle" size={16} color={COLORS.success} />
-              <Text style={styles.statusText}>
+              <FontAwesome5 name="check-circle" size={16} color={colors.success} />
+              <Text style={[styles.statusText, { color: colors.textSecondary }]}>
                 {dispositivos.filter(d => d.estado).length} dispositivos ativos
               </Text>
             </View>
             <View style={styles.statusItem}>
-              <FontAwesome5 name="cog" size={16} color={COLORS.info} />
-              <Text style={styles.statusText}>
+              <FontAwesome5 name="cog" size={16} color={colors.info} />
+              <Text style={[styles.statusText, { color: colors.textSecondary }]}>
                 {parametros.filter(p => p.automatico).length}/{parametros.length} automáticos
               </Text>
             </View>
@@ -340,30 +347,39 @@ const handleVoltar = () => {
 
           {/* Ações Rápidas */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Ações Rápidas</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Ações Rápidas</Text>
             <View style={styles.acoesGrid}>
               <TouchableOpacity 
-                style={styles.acaoButton}
+                style={[styles.acaoButton, { 
+                  backgroundColor: colors.gray50, 
+                  borderColor: colors.borderLight 
+                }]}
                 onPress={() => executarAcaoRapida('ventilacao')}
               >
-                <FontAwesome5 name="wind" size={24} color={COLORS.info} />
-                <Text style={styles.acaoText}>Ventilar</Text>
+                <FontAwesome5 name="wind" size={24} color={colors.info} />
+                <Text style={[styles.acaoText, { color: colors.textPrimary }]}>Ventilar</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles.acaoButton}
+                style={[styles.acaoButton, { 
+                  backgroundColor: colors.gray50, 
+                  borderColor: colors.borderLight 
+                }]}
                 onPress={() => executarAcaoRapida('irrigacao')}
               >
-                <FontAwesome5 name="tint" size={24} color={COLORS.primary} />
-                <Text style={styles.acaoText}>Irrigar</Text>
+                <FontAwesome5 name="tint" size={24} color={colors.primary} />
+                <Text style={[styles.acaoText, { color: colors.textPrimary }]}>Irrigar</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles.acaoButton}
+                style={[styles.acaoButton, { 
+                  backgroundColor: colors.gray50, 
+                  borderColor: colors.borderLight 
+                }]}
                 onPress={() => executarAcaoRapida('luz')}
               >
-                <FontAwesome5 name="lightbulb" size={24} color={COLORS.warning} />
-                <Text style={styles.acaoText}>Luz</Text>
+                <FontAwesome5 name="lightbulb" size={24} color={colors.warning} />
+                <Text style={[styles.acaoText, { color: colors.textPrimary }]}>Luz</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -371,21 +387,21 @@ const handleVoltar = () => {
           {/* Parâmetros Ambientais */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Parâmetros Ambientais</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Parâmetros Ambientais</Text>
               <View style={styles.controlesGlobais}>
                 <TouchableOpacity 
-                  style={styles.controleGlobalBtn}
+                  style={[styles.controleGlobalBtn, { backgroundColor: colors.success }]}
                   onPress={ativarTodosDispositivos}
                 >
-                  <FontAwesome5 name="play" size={12} color={COLORS.textInverse} />
-                  <Text style={styles.controleGlobalText}>Ligar Todos</Text>
+                  <FontAwesome5 name="play" size={12} color={colors.textInverse} />
+                  <Text style={[styles.controleGlobalText, { color: colors.textInverse }]}>Ligar Todos</Text>
                 </TouchableOpacity>
                 <TouchableOpacity 
-                  style={[styles.controleGlobalBtn, styles.controleGlobalBtnOff]}
+                  style={[styles.controleGlobalBtn, styles.controleGlobalBtnOff, { backgroundColor: colors.error }]}
                   onPress={desativarTodosDispositivos}
                 >
-                  <FontAwesome5 name="stop" size={12} color={COLORS.textInverse} />
-                  <Text style={styles.controleGlobalText}>Desligar Todos</Text>
+                  <FontAwesome5 name="stop" size={12} color={colors.textInverse} />
+                  <Text style={[styles.controleGlobalText, { color: colors.textInverse }]}>Desligar Todos</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -397,16 +413,16 @@ const handleVoltar = () => {
 
           {/* Dispositivos */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Dispositivos</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Dispositivos</Text>
             {dispositivos.map((dispositivo) => (
               <DispositivoControle key={dispositivo.id} dispositivo={dispositivo} />
             ))}
           </View>
 
           {/* Informações */}
-          <View style={styles.infoBox}>
-            <FontAwesome5 name="info-circle" size={16} color={COLORS.info} />
-            <Text style={styles.infoText}>
+          <View style={[styles.infoBox, { backgroundColor: colors.greenLight }]}>
+            <FontAwesome5 name="info-circle" size={16} color={colors.info} />
+            <Text style={[styles.infoText, { color: colors.textPrimary }]}>
               Modo automático ajusta os parâmetros baseado nas necessidades das plantas
             </Text>
           </View>
@@ -419,18 +435,16 @@ const handleVoltar = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContent: {
     flexGrow: 1,
     padding: 16,
   },
   box: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 24,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -441,19 +455,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     textAlign: "center",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textSecondary,
     textAlign: "center",
   },
   statusContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
     marginBottom: 24,
@@ -464,7 +475,6 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
     marginLeft: 8,
   },
   section: {
@@ -479,7 +489,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.fontSize.xl,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
   },
   controlesGlobais: {
     flexDirection: "row",
@@ -488,17 +497,15 @@ const styles = StyleSheet.create({
   controleGlobalBtn: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.success,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6,
   },
   controleGlobalBtnOff: {
-    backgroundColor: COLORS.error,
+    // Cor movida para o style inline
   },
   controleGlobalText: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textInverse,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     marginLeft: 4,
   },
@@ -510,27 +517,22 @@ const styles = StyleSheet.create({
   acaoButton: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
     borderWidth: 1,
-    borderColor: COLORS.borderLight,
   },
-    backButton: {
+  backButton: {
     padding: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
     width: 40,
   },
   acaoText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
-    color: COLORS.textPrimary,
     marginTop: 8,
   },
   parametroCard: {
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
@@ -560,30 +562,25 @@ const styles = StyleSheet.create({
   parametroNome: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginBottom: 2,
   },
   parametroValor: {
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
   },
   controleAutomatico: {
     alignItems: "center",
   },
   controleTexto: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textSecondary,
     marginBottom: 4,
   },
   controleManual: {
     borderTopWidth: 1,
-    borderTopColor: COLORS.borderLight,
     paddingTop: 12,
   },
   rangeText: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textSecondary,
     textAlign: "center",
     marginBottom: 8,
   },
@@ -593,7 +590,6 @@ const styles = StyleSheet.create({
   },
   sliderTrack: {
     height: 6,
-    backgroundColor: COLORS.gray300,
     borderRadius: 3,
     marginBottom: 12,
     overflow: 'hidden',
@@ -608,7 +604,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   sliderButton: {
-    backgroundColor: COLORS.primary,
     width: 32,
     height: 32,
     borderRadius: 16,
@@ -618,13 +613,11 @@ const styles = StyleSheet.create({
   sliderValue: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
   },
   dispositivoCard: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
     marginBottom: 8,
@@ -648,27 +641,23 @@ const styles = StyleSheet.create({
   dispositivoNome: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginBottom: 2,
   },
   dispositivoDesligado: {
-    color: COLORS.textDisabled,
+    // Cor movida para o style inline
   },
   dispositivoEstado: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
   },
   infoBox: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: COLORS.greenLight,
     borderRadius: 8,
     padding: 12,
   },
   infoText: {
     flex: 1,
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textPrimary,
     marginLeft: 8,
     lineHeight: TYPOGRAPHY.lineHeight.relaxed * TYPOGRAPHY.fontSize.sm,
   },

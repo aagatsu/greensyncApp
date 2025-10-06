@@ -14,11 +14,12 @@ import {
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { COLORS } from '@/constants/Cores'; 
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes'; 
 
 export default function AdicionarEstufa() {
   const router = useRouter();
+  const { colors } = useTheme(); // NOVO HOOK
 
   const [nome, setNome] = useState("");
   const [localizacao, setLocalizacao] = useState("");
@@ -108,64 +109,73 @@ export default function AdicionarEstufa() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]} // ATUALIZADO
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.box}>
+        <View style={[styles.box, { backgroundColor: colors.surface }]}> {/* ATUALIZADO */}
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={handleCancelar}>
-              <FontAwesome5 name="arrow-left" size={TYPOGRAPHY.fontSize.lg} color={COLORS.primary} />
+            <TouchableOpacity 
+              style={[styles.backButton, { borderColor: colors.border }]} // ATUALIZADO
+              onPress={handleCancelar}
+            >
+              <FontAwesome5 name="arrow-left" size={TYPOGRAPHY.fontSize.lg} color={colors.primary} /> {/* ATUALIZADO */}
             </TouchableOpacity>
-            <Text style={styles.title}>Nova Estufa</Text>
+            <Text style={[styles.title, { color: colors.primary }]}>Nova Estufa</Text> {/* ATUALIZADO */}
             <View style={styles.headerSpacer} />
           </View>
 
-          <Text style={styles.subtitle}>Preencha os dados da nova estufa</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Preencha os dados da nova estufa</Text> {/* ATUALIZADO */}
 
           {/* Foto da Estufa */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Foto da Estufa *</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Foto da Estufa *</Text> {/* ATUALIZADO */}
             
             {imagem ? (
               <View style={styles.imagePreviewContainer}>
                 <Image source={{ uri: imagem }} style={styles.previewImage} />
                 <View style={styles.imageActions}>
                   <TouchableOpacity 
-                    style={styles.imageActionButton}
+                    style={[styles.imageActionButton, { backgroundColor: colors.success }]} // ATUALIZADO
                     onPress={escolherImagem}
                   >
-                    <FontAwesome5 name="sync" size={TYPOGRAPHY.fontSize.sm} color={COLORS.white} />
-                    <Text style={styles.imageActionText}>Trocar</Text>
+                    <FontAwesome5 name="sync" size={TYPOGRAPHY.fontSize.sm} color={colors.white} /> {/* ATUALIZADO */}
+                    <Text style={[styles.imageActionText, { color: colors.white }]}>Trocar</Text> {/* ATUALIZADO */}
                   </TouchableOpacity>
                   <TouchableOpacity 
-                    style={[styles.imageActionButton, styles.removeButton]}
+                    style={[styles.imageActionButton, styles.removeButton, { backgroundColor: colors.error }]} // ATUALIZADO
                     onPress={removerImagem}
                   >
-                    <FontAwesome5 name="trash" size={TYPOGRAPHY.fontSize.sm} color={COLORS.white} />
-                    <Text style={styles.imageActionText}>Remover</Text>
+                    <FontAwesome5 name="trash" size={TYPOGRAPHY.fontSize.sm} color={colors.white} /> {/* ATUALIZADO */}
+                    <Text style={[styles.imageActionText, { color: colors.white }]}>Remover</Text> {/* ATUALIZADO */}
                   </TouchableOpacity>
                 </View>
               </View>
             ) : (
               <View style={styles.imageOptions}>
                 <TouchableOpacity 
-                  style={styles.imageOptionButton}
+                  style={[styles.imageOptionButton, { 
+                    backgroundColor: colors.gray50, 
+                    borderColor: colors.border 
+                  }]} // ATUALIZADO
                   onPress={escolherImagem}
                 >
-                  <FontAwesome5 name="image" size={TYPOGRAPHY.fontSize['3xl']} color={COLORS.success} />
-                  <Text style={styles.imageOptionText}>Galeria</Text>
-                  <Text style={styles.imageOptionSubtext}>Escolher da galeria</Text>
+                  <FontAwesome5 name="image" size={TYPOGRAPHY.fontSize['3xl']} color={colors.success} /> {/* ATUALIZADO */}
+                  <Text style={[styles.imageOptionText, { color: colors.textPrimary }]}>Galeria</Text> {/* ATUALIZADO */}
+                  <Text style={[styles.imageOptionSubtext, { color: colors.textDisabled }]}>Escolher da galeria</Text> {/* ATUALIZADO */}
                 </TouchableOpacity>
                 
                 <TouchableOpacity 
-                  style={styles.imageOptionButton}
+                  style={[styles.imageOptionButton, { 
+                    backgroundColor: colors.gray50, 
+                    borderColor: colors.border 
+                  }]} // ATUALIZADO
                   onPress={tirarFoto}
                 >
-                  <FontAwesome5 name="camera" size={TYPOGRAPHY.fontSize['3xl']} color={COLORS.info} />
-                  <Text style={styles.imageOptionText}>Câmera</Text>
-                  <Text style={styles.imageOptionSubtext}>Tirar nova foto</Text>
+                  <FontAwesome5 name="camera" size={TYPOGRAPHY.fontSize['3xl']} color={colors.info} /> {/* ATUALIZADO */}
+                  <Text style={[styles.imageOptionText, { color: colors.textPrimary }]}>Câmera</Text> {/* ATUALIZADO */}
+                  <Text style={[styles.imageOptionSubtext, { color: colors.textDisabled }]}>Tirar nova foto</Text> {/* ATUALIZADO */}
                 </TouchableOpacity>
               </View>
             )}
@@ -173,48 +183,60 @@ export default function AdicionarEstufa() {
 
           {/* Informações Básicas */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Informações Básicas</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Informações Básicas</Text> {/* ATUALIZADO */}
             
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Nome da Estufa *</Text>
+              <Text style={[styles.label, { color: colors.textPrimary }]}>Nome da Estufa *</Text> {/* ATUALIZADO */}
               <TextInput
-                style={styles.input}
+                style={[styles.input, { 
+                  backgroundColor: colors.gray50, 
+                  borderColor: colors.borderDark,
+                  color: colors.textPrimary 
+                }]} // ATUALIZADO
                 placeholder="Ex: Estufa de Hortelã, Estufa Principal..."
-                placeholderTextColor={COLORS.textDisabled}
+                placeholderTextColor={colors.textDisabled} // ATUALIZADO
                 value={nome}
                 onChangeText={setNome}
                 maxLength={50}
               />
               {nome.length > 0 && (
-                <Text style={styles.charCount}>{nome.length}/50</Text>
+                <Text style={[styles.charCount, { color: colors.textDisabled }]}>{nome.length}/50</Text> // ATUALIZADO
               )}
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Localização *</Text>
+              <Text style={[styles.label, { color: colors.textPrimary }]}>Localização *</Text> {/* ATUALIZADO */}
               <TextInput
-                style={styles.input}
+                style={[styles.input, { 
+                  backgroundColor: colors.gray50, 
+                  borderColor: colors.borderDark,
+                  color: colors.textPrimary 
+                }]} // ATUALIZADO
                 placeholder="Ex: Varanda, Quintal, Garagem..."
-                placeholderTextColor={COLORS.textDisabled}
+                placeholderTextColor={colors.textDisabled} // ATUALIZADO
                 value={localizacao}
                 onChangeText={setLocalizacao}
                 maxLength={30}
               />
               {localizacao.length > 0 && (
-                <Text style={styles.charCount}>{localizacao.length}/30</Text>
+                <Text style={[styles.charCount, { color: colors.textDisabled }]}>{localizacao.length}/30</Text> // ATUALIZADO
               )}
             </View>
           </View>
 
           {/* Descrição */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Descrição (Opcional)</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Descrição (Opcional)</Text> {/* ATUALIZADO */}
             
             <View style={styles.inputContainer}>
               <TextInput
-                style={[styles.input, styles.textArea]}
+                style={[styles.input, styles.textArea, { 
+                  backgroundColor: colors.gray50, 
+                  borderColor: colors.borderDark,
+                  color: colors.textPrimary 
+                }]} // ATUALIZADO
                 placeholder="Descreva a finalidade desta estufa, tipos de plantas, observações..."
-                placeholderTextColor={COLORS.textDisabled}
+                placeholderTextColor={colors.textDisabled} // ATUALIZADO
                 value={descricao}
                 onChangeText={setDescricao}
                 multiline
@@ -223,21 +245,33 @@ export default function AdicionarEstufa() {
                 maxLength={200}
               />
               {descricao.length > 0 && (
-                <Text style={styles.charCount}>{descricao.length}/200</Text>
+                <Text style={[styles.charCount, { color: colors.textDisabled }]}>{descricao.length}/200</Text> // ATUALIZADO
               )}
             </View>
           </View>
 
           {/* Indicadores de Validação */}
-          <View style={styles.indicadores}>
-            <Text style={styles.indicadorTitulo}>Validação do formulário:</Text>
-            <Text style={nome.length > 0 ? styles.indicadorOk : styles.indicadorNok}>
+          <View style={[styles.indicadores, { 
+            backgroundColor: colors.gray50, 
+            borderLeftColor: colors.success 
+          }]}> {/* ATUALIZADO */}
+            <Text style={[styles.indicadorTitulo, { color: colors.textSecondary }]}>Validação do formulário:</Text> {/* ATUALIZADO */}
+            <Text style={[
+              nome.length > 0 ? styles.indicadorOk : styles.indicadorNok,
+              { color: nome.length > 0 ? colors.success : colors.error }
+            ]}>
               {nome.length > 0 ? "✓ Nome preenchido" : "✗ Nome obrigatório"}
             </Text>
-            <Text style={localizacao.length > 0 ? styles.indicadorOk : styles.indicadorNok}>
+            <Text style={[
+              localizacao.length > 0 ? styles.indicadorOk : styles.indicadorNok,
+              { color: localizacao.length > 0 ? colors.success : colors.error }
+            ]}>
               {localizacao.length > 0 ? "✓ Localização preenchida" : "✗ Localização obrigatória"}
             </Text>
-            <Text style={imagem !== null ? styles.indicadorOk : styles.indicadorNok}>
+            <Text style={[
+              imagem !== null ? styles.indicadorOk : styles.indicadorNok,
+              { color: imagem !== null ? colors.success : colors.error }
+            ]}>
               {imagem !== null ? "✓ Foto adicionada" : "✗ Foto obrigatória"}
             </Text>
           </View>
@@ -247,25 +281,28 @@ export default function AdicionarEstufa() {
             <TouchableOpacity 
               style={[
                 styles.botaoSalvar, 
-                !validarFormulario() && styles.botaoDesabilitado
+                { backgroundColor: colors.primary }, // ATUALIZADO
+                !validarFormulario() && [styles.botaoDesabilitado, { backgroundColor: colors.gray400 }] // ATUALIZADO
               ]} 
               onPress={handleSalvar}
               disabled={!validarFormulario()}
             >
-              <FontAwesome5 name="save" size={TYPOGRAPHY.fontSize.base} color={COLORS.white} />
-              <Text style={styles.botaoSalvarText}>Salvar Estufa</Text>
+              <FontAwesome5 name="save" size={TYPOGRAPHY.fontSize.base} color={colors.white} /> {/* ATUALIZADO */}
+              <Text style={[styles.botaoSalvarText, { color: colors.white }]}>Salvar Estufa</Text> {/* ATUALIZADO */}
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={styles.botaoCancelar} 
+              style={[styles.botaoCancelar, { 
+                borderColor: colors.borderDark 
+              }]} // ATUALIZADO
               onPress={handleCancelar}
             >
-              <FontAwesome5 name="times" size={TYPOGRAPHY.fontSize.base} color={COLORS.textSecondary} />
-              <Text style={styles.botaoCancelarText}>Cancelar</Text>
+              <FontAwesome5 name="times" size={TYPOGRAPHY.fontSize.base} color={colors.textSecondary} /> {/* ATUALIZADO */}
+              <Text style={[styles.botaoCancelarText, { color: colors.textSecondary }]}>Cancelar</Text> {/* ATUALIZADO */}
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.requiredText}>* Campos obrigatórios</Text>
+          <Text style={[styles.requiredText, { color: colors.textDisabled }]}>* Campos obrigatórios</Text> {/* ATUALIZADO */}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -275,18 +312,16 @@ export default function AdicionarEstufa() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContainer: {
     flexGrow: 1,
     padding: 16,
   },
   box: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 24,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -301,12 +336,10 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   title: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     textAlign: "center",
     flex: 1,
   },
@@ -315,7 +348,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textSecondary,
     marginBottom: 30,
     textAlign: "center",
   },
@@ -325,7 +357,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
     marginBottom: 16,
   },
   imagePreviewContainer: {
@@ -343,7 +374,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   imageActionButton: {
-    backgroundColor: COLORS.success,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
@@ -351,10 +381,9 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   removeButton: {
-    backgroundColor: COLORS.error,
+    // Cor movida para o style inline
   },
   imageActionText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 6,
@@ -366,9 +395,7 @@ const styles = StyleSheet.create({
   },
   imageOptionButton: {
     flex: 1,
-    backgroundColor: COLORS.background,
     borderWidth: 2,
-    borderColor: COLORS.border,
     borderStyle: 'dashed',
     borderRadius: 12,
     padding: 20,
@@ -378,12 +405,10 @@ const styles = StyleSheet.create({
   imageOptionText: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginTop: 8,
   },
   imageOptionSubtext: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textDisabled,
     marginTop: 4,
     textAlign: "center",
   },
@@ -393,18 +418,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: COLORS.background,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textPrimary,
   },
   textArea: {
     height: 100,
@@ -412,33 +433,27 @@ const styles = StyleSheet.create({
   },
   charCount: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textDisabled,
     textAlign: "right",
     marginTop: 4,
   },
   indicadores: {
-    backgroundColor: COLORS.background,
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
     borderLeftWidth: 4,
-    borderLeftColor: COLORS.success,
   },
   indicadorTitulo: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginBottom: 10,
-    color: COLORS.textSecondary,
   },
   indicadorOk: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.success,
     marginBottom: 6,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   indicadorNok: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.error,
     marginBottom: 6,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
@@ -446,7 +461,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   botaoSalvar: {
-    backgroundColor: COLORS.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -454,16 +468,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   botaoDesabilitado: {
-    backgroundColor: COLORS.gray400,
+    // Cor movida para o style inline
   },
   botaoSalvarText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginLeft: 8,
@@ -475,17 +488,14 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.borderDark,
   },
   botaoCancelarText: {
-    color: COLORS.textSecondary,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 8,
   },
   requiredText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textDisabled,
     textAlign: "center",
     marginTop: 16,
   },

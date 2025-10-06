@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from '@/constants/Cores';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 // Interfaces para tipagem
@@ -47,12 +47,14 @@ interface Alerta {
 
 // COMPONENTE ALERTA CARD DEFINIDO PRIMEIRO
 const AlertaCard: React.FC<{ alerta: Alerta; onPress: () => void }> = ({ alerta, onPress }) => {
+  const { colors } = useTheme(); // NOVO HOOK
+
   const getAlertaColor = (tipo: string) => {
     switch (tipo) {
-      case 'urgente': return COLORS.error;
-      case 'aviso': return COLORS.warning;
-      case 'info': return COLORS.info;
-      default: return COLORS.textSecondary;
+      case 'urgente': return colors.error;
+      case 'aviso': return colors.warning;
+      case 'info': return colors.info;
+      default: return colors.textSecondary;
     }
   };
 
@@ -69,7 +71,11 @@ const AlertaCard: React.FC<{ alerta: Alerta; onPress: () => void }> = ({ alerta,
     <TouchableOpacity 
       style={[
         styles.alertaCard,
-        !alerta.lido && styles.alertaNaoLido
+        { backgroundColor: colors.gray50 },
+        !alerta.lido && [styles.alertaNaoLido, { 
+          backgroundColor: colors.surface, 
+          borderColor: colors.borderLight 
+        }]
       ]}
       onPress={onPress}
     >
@@ -82,8 +88,8 @@ const AlertaCard: React.FC<{ alerta: Alerta; onPress: () => void }> = ({ alerta,
           />
         </View>
         <View style={styles.alertaContent}>
-          <Text style={styles.alertaMensagem}>{alerta.mensagem}</Text>
-          <Text style={styles.alertaTempo}>{alerta.tempo}</Text>
+          <Text style={[styles.alertaMensagem, { color: colors.textPrimary }]}>{alerta.mensagem}</Text>
+          <Text style={[styles.alertaTempo, { color: colors.textSecondary }]}>{alerta.tempo}</Text>
         </View>
         {!alerta.lido && <View style={[styles.alertaDot, { backgroundColor: getAlertaColor(alerta.tipo) }]} />}
       </View>
@@ -105,7 +111,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 12,
         variacao: 8,
         icone: 'seedling',
-        cor: COLORS.success
+        cor: '#4CAF50' // Mantido como string pois será usado no estilo
       },
       {
         id: '2',
@@ -113,7 +119,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 24.5,
         variacao: -2,
         icone: 'thermometer-half',
-        cor: COLORS.error,
+        cor: '#F44336',
         unidade: '°C'
       },
       {
@@ -122,7 +128,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 78,
         variacao: 12,
         icone: 'tint',
-        cor: COLORS.info,
+        cor: '#2196F3',
         unidade: '%'
       },
       {
@@ -131,7 +137,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 35,
         variacao: 15,
         icone: 'leaf',
-        cor: COLORS.primary,
+        cor: '#277C5C',
         unidade: '%'
       }
     ],
@@ -171,7 +177,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 15,
         variacao: 5,
         icone: 'seedling',
-        cor: COLORS.success
+        cor: '#4CAF50'
       },
       {
         id: '2',
@@ -179,7 +185,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 23.8,
         variacao: 1.2,
         icone: 'thermometer-half',
-        cor: COLORS.error,
+        cor: '#F44336',
         unidade: '°C'
       },
       {
@@ -188,7 +194,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 72,
         variacao: 8,
         icone: 'tint',
-        cor: COLORS.info,
+        cor: '#2196F3',
         unidade: '%'
       },
       {
@@ -197,7 +203,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 42,
         variacao: 22,
         icone: 'leaf',
-        cor: COLORS.primary,
+        cor: '#277C5C',
         unidade: '%'
       }
     ],
@@ -245,7 +251,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 18,
         variacao: 25,
         icone: 'seedling',
-        cor: COLORS.success
+        cor: '#4CAF50'
       },
       {
         id: '2',
@@ -253,7 +259,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 24.2,
         variacao: -0.8,
         icone: 'thermometer-half',
-        cor: COLORS.error,
+        cor: '#F44336',
         unidade: '°C'
       },
       {
@@ -262,7 +268,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 75,
         variacao: 18,
         icone: 'tint',
-        cor: COLORS.info,
+        cor: '#2196F3',
         unidade: '%'
       },
       {
@@ -271,7 +277,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
         valor: 48,
         variacao: 35,
         icone: 'leaf',
-        cor: COLORS.primary,
+        cor: '#277C5C',
         unidade: '%'
       }
     ],
@@ -323,6 +329,7 @@ const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
 
 export default function Dashboard() {
   const router = useRouter();
+  const { colors } = useTheme(); // NOVO HOOK
   const [refreshing, setRefreshing] = useState(false);
   const [periodo, setPeriodo] = useState<'hoje' | 'semana' | 'mes'>('hoje');
   const [metricas, setMetricas] = useState<MetricCard[]>([]);
@@ -332,7 +339,6 @@ export default function Dashboard() {
   const handleVoltar = () => {
     router.back();
   };
-
 
   // Alertas (mantidos fixos pois são em tempo real)
   const [alertas, setAlertas] = useState<Alerta[]>([
@@ -388,11 +394,11 @@ export default function Dashboard() {
 
   const getSaudeColor = (saude: SaudeTipo) => {
     switch (saude) {
-      case 'excelente': return COLORS.success;
-      case 'boa': return COLORS.primaryLight;
-      case 'atenção': return COLORS.warning;
-      case 'critica': return COLORS.error;
-      default: return COLORS.textSecondary;
+      case 'excelente': return colors.success;
+      case 'boa': return colors.primaryLight;
+      case 'atenção': return colors.warning;
+      case 'critica': return colors.error;
+      default: return colors.textSecondary;
     }
   };
 
@@ -404,7 +410,7 @@ export default function Dashboard() {
 
   // Componente de Card de Métrica
   const MetricCard = ({ metrica }: { metrica: MetricCard }) => (
-    <View style={styles.metricCard}>
+    <View style={[styles.metricCard, { backgroundColor: colors.gray50 }]}>
       <View style={styles.metricHeader}>
         <View style={[styles.metricIcon, { backgroundColor: `${metrica.cor}20` }]}>
           <FontAwesome5 name={metrica.icone} size={20} color={metrica.cor} />
@@ -413,33 +419,33 @@ export default function Dashboard() {
           <FontAwesome5 
             name={metrica.variacao >= 0 ? "arrow-up" : "arrow-down"} 
             size={10} 
-            color={metrica.variacao >= 0 ? COLORS.success : COLORS.error} 
+            color={metrica.variacao >= 0 ? colors.success : colors.error} 
           />
           <Text style={[
             styles.variacaoText,
-            { color: metrica.variacao >= 0 ? COLORS.success : COLORS.error }
+            { color: metrica.variacao >= 0 ? colors.success : colors.error }
           ]}>
             {Math.abs(metrica.variacao)}%
           </Text>
         </View>
       </View>
-      <Text style={styles.metricValue}>
+      <Text style={[styles.metricValue, { color: colors.textPrimary }]}>
         {metrica.valor}{metrica.unidade && <Text style={styles.metricUnit}> {metrica.unidade}</Text>}
       </Text>
-      <Text style={styles.metricTitle}>{metrica.titulo}</Text>
+      <Text style={[styles.metricTitle, { color: colors.textSecondary }]}>{metrica.titulo}</Text>
     </View>
   );
 
   // Componente de Status da Planta
   const PlantaStatusCard = ({ planta }: { planta: PlantaStatus }) => (
     <TouchableOpacity 
-      style={styles.plantaCard}
+      style={[styles.plantaCard, { backgroundColor: colors.gray50 }]}
       onPress={() => router.push(`/screens/DetalhesPlanta?id=${planta.id}`)}
     >
       <View style={styles.plantaHeader}>
         <View style={styles.plantaInfo}>
-          <FontAwesome5 name={planta.icone} size={16} color={COLORS.primary} />
-          <Text style={styles.plantaNome}>{planta.nome}</Text>
+          <FontAwesome5 name={planta.icone} size={16} color={colors.primary} />
+          <Text style={[styles.plantaNome, { color: colors.textPrimary }]}>{planta.nome}</Text>
         </View>
         <View style={[styles.saudeBadge, { backgroundColor: `${getSaudeColor(planta.saude)}20` }]}>
           <Text style={[styles.saudeText, { color: getSaudeColor(planta.saude) }]}>
@@ -449,12 +455,12 @@ export default function Dashboard() {
       </View>
       <View style={styles.plantaDetails}>
         <View style={styles.detailItem}>
-          <FontAwesome5 name="clock" size={12} color={COLORS.textSecondary} />
-          <Text style={styles.detailText}>Próximo cuidado: {planta.proximoCuidado}</Text>
+          <FontAwesome5 name="clock" size={12} color={colors.textSecondary} />
+          <Text style={[styles.detailText, { color: colors.textSecondary }]}>Próximo cuidado: {planta.proximoCuidado}</Text>
         </View>
         <View style={styles.detailItem}>
-          <FontAwesome5 name="tint" size={12} color={COLORS.textSecondary} />
-          <Text style={styles.detailText}>Última rega: {planta.ultimaRega}</Text>
+          <FontAwesome5 name="tint" size={12} color={colors.textSecondary} />
+          <Text style={[styles.detailText, { color: colors.textSecondary }]}>Última rega: {planta.ultimaRega}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -462,7 +468,7 @@ export default function Dashboard() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView 
@@ -471,41 +477,45 @@ export default function Dashboard() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={[COLORS.primary]}
-            tintColor={COLORS.primary}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
           />
         }
       >
-        <View style={styles.box}>
+        <View style={[styles.box, { backgroundColor: colors.surface }]}>
           {/* Header */}
           <View style={styles.header}>
             <View>
-                <TouchableOpacity style={styles.backButton} onPress={handleVoltar}>
-                <FontAwesome5 name="arrow-left" size={20} color="#277C5C" />
-                </TouchableOpacity>
-              <Text style={styles.title}>Dashboard</Text>
-              <Text style={styles.subtitle}>Visão geral do seu cultivo</Text>
+              <TouchableOpacity 
+                style={[styles.backButton, { borderColor: colors.border }]} 
+                onPress={handleVoltar}
+              >
+                <FontAwesome5 name="arrow-left" size={20} color={colors.primary} />
+              </TouchableOpacity>
+              <Text style={[styles.title, { color: colors.primary }]}>Dashboard</Text>
+              <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Visão geral do seu cultivo</Text>
             </View>
-            <TouchableOpacity style={styles.filterButton}>
-              <FontAwesome5 name="filter" size={16} color={COLORS.primary} />
-              <Text style={styles.filterText}>Filtrar</Text>
+            <TouchableOpacity style={[styles.filterButton, { backgroundColor: colors.gray50 }]}>
+              <FontAwesome5 name="filter" size={16} color={colors.primary} />
+              <Text style={[styles.filterText, { color: colors.primary }]}>Filtrar</Text>
             </TouchableOpacity>
           </View>
 
           {/* Período */}
-          <View style={styles.periodoContainer}>
+          <View style={[styles.periodoContainer, { backgroundColor: colors.gray50 }]}>
             {(['hoje', 'semana', 'mes'] as const).map((item) => (
               <TouchableOpacity
                 key={item}
                 style={[
                   styles.periodoButton,
-                  periodo === item && styles.periodoButtonActive
+                  periodo === item && [styles.periodoButtonActive, { backgroundColor: colors.surface }]
                 ]}
                 onPress={() => handlePeriodoChange(item)}
               >
                 <Text style={[
                   styles.periodoText,
-                  periodo === item && styles.periodoTextActive
+                  { color: colors.textSecondary },
+                  periodo === item && [styles.periodoTextActive, { color: colors.primary }]
                 ]}>
                   {item === 'hoje' ? 'Hoje' : item === 'semana' ? 'Semana' : 'Mês'}
                 </Text>
@@ -515,7 +525,7 @@ export default function Dashboard() {
 
           {/* Métricas em Grid */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Métricas Principais</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Métricas Principais</Text>
             <View style={styles.metricsGrid}>
               {metricas.map((metrica) => (
                 <MetricCard key={metrica.id} metrica={metrica} />
@@ -526,9 +536,9 @@ export default function Dashboard() {
           {/* Status das Plantas */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Status das Plantas</Text>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Status das Plantas</Text>
               <TouchableOpacity onPress={() => router.push('/(tabs)/Plantas')}>
-                <Text style={styles.verTodosText}>Ver todas</Text>
+                <Text style={[styles.verTodosText, { color: colors.primary }]}>Ver todas</Text>
               </TouchableOpacity>
             </View>
             <ScrollView 
@@ -545,8 +555,8 @@ export default function Dashboard() {
           {/* Alertas e Notificações */}
           <View style={styles.section}>
             <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Alertas</Text>
-              <Text style={styles.alertasCount}>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Alertas</Text>
+              <Text style={[styles.alertasCount, { color: colors.error }]}>
                 {alertas.filter(a => !a.lido).length} não lidos
               </Text>
             </View>
@@ -563,48 +573,48 @@ export default function Dashboard() {
 
           {/* Ações Rápidas */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Ações Rápidas</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Ações Rápidas</Text>
             <View style={styles.acoesGrid}>
               <TouchableOpacity 
-                style={styles.acaoButton}
+                style={[styles.acaoButton, { backgroundColor: colors.gray50 }]}
                 onPress={() => router.push('/screens/ControleAmbiente')}
               >
-                <FontAwesome5 name="cog" size={20} color={COLORS.primary} />
-                <Text style={styles.acaoText}>Controle</Text>
+                <FontAwesome5 name="cog" size={20} color={colors.primary} />
+                <Text style={[styles.acaoText, { color: colors.textPrimary }]}>Controle</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles.acaoButton}
+                style={[styles.acaoButton, { backgroundColor: colors.gray50 }]}
                 onPress={() => router.push('/(tabs)/Plantas')}
               >
-                <FontAwesome5 name="plus" size={20} color={COLORS.primary} />
-                <Text style={styles.acaoText}>Nova Planta</Text>
+                <FontAwesome5 name="plus" size={20} color={colors.primary} />
+                <Text style={[styles.acaoText, { color: colors.textPrimary }]}>Nova Planta</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles.acaoButton}
+                style={[styles.acaoButton, { backgroundColor: colors.gray50 }]}
                 onPress={() => router.push('/(tabs)/Estufas')}
               >
-                <FontAwesome5 name="warehouse" size={20} color={COLORS.primary} />
-                <Text style={styles.acaoText}>Estufas</Text>
+                <FontAwesome5 name="warehouse" size={20} color={colors.primary} />
+                <Text style={[styles.acaoText, { color: colors.textPrimary }]}>Estufas</Text>
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles.acaoButton}
+                style={[styles.acaoButton, { backgroundColor: colors.gray50 }]}
                 onPress={() => {/* Gerar relatório */}}
               >
-                <FontAwesome5 name="chart-bar" size={20} color={COLORS.primary} />
-                <Text style={styles.acaoText}>Relatório</Text>
+                <FontAwesome5 name="chart-bar" size={20} color={colors.primary} />
+                <Text style={[styles.acaoText, { color: colors.textPrimary }]}>Relatório</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Dicas do Dia */}
-          <View style={styles.dicaContainer}>
-            <FontAwesome5 name="lightbulb" size={20} color={COLORS.warning} />
+          <View style={[styles.dicaContainer, { backgroundColor: colors.goldLight }]}>
+            <FontAwesome5 name="lightbulb" size={20} color={colors.warning} />
             <View style={styles.dicaContent}>
-              <Text style={styles.dicaTitle}>Dica do Dia</Text>
-              <Text style={styles.dicaText}>
+              <Text style={[styles.dicaTitle, { color: colors.textPrimary }]}>Dica do Dia</Text>
+              <Text style={[styles.dicaText, { color: colors.textSecondary }]}>
                 {dicaAtual}
               </Text>
             </View>
@@ -615,22 +625,19 @@ export default function Dashboard() {
   );
 }
 
-// ... (seus estilos permanecem os mesmos)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContent: {
     flexGrow: 1,
     padding: 16,
   },
   box: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 24,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -641,40 +648,34 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 20,
   },
-      backButton: {
+  backButton: {
     padding: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
     width: 40,
   },
   title: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
   },
   subtitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textSecondary,
     marginTop: 4,
   },
   filterButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.gray50,
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 6,
   },
   filterText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     marginLeft: 6,
   },
   periodoContainer: {
     flexDirection: "row",
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 4,
     marginBottom: 24,
@@ -687,20 +688,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   periodoButtonActive: {
-    backgroundColor: COLORS.surface,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   periodoText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   periodoTextActive: {
-    color: COLORS.primary,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
   },
   section: {
@@ -715,16 +713,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.fontSize.xl,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
   },
   verTodosText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.primary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   alertasCount: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.error,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   metricsGrid: {
@@ -735,7 +730,6 @@ const styles = StyleSheet.create({
   },
   metricCard: {
     width: '48%',
-    backgroundColor: COLORS.gray50,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
@@ -765,7 +759,6 @@ const styles = StyleSheet.create({
   metricValue: {
     fontSize: TYPOGRAPHY.fontSize['2xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
     marginBottom: 4,
   },
   metricUnit: {
@@ -774,14 +767,12 @@ const styles = StyleSheet.create({
   },
   metricTitle: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
   },
   plantasScroll: {
     paddingRight: 16,
   },
   plantaCard: {
     width: 200,
-    backgroundColor: COLORS.gray50,
     borderRadius: 12,
     padding: 16,
     marginRight: 12,
@@ -800,7 +791,6 @@ const styles = StyleSheet.create({
   plantaNome: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginLeft: 8,
   },
   saudeBadge: {
@@ -822,22 +812,17 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textSecondary,
     marginLeft: 6,
   },
   alertasContainer: {
     gap: 8,
   },
   alertaCard: {
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 12,
     opacity: 0.8,
   },
   alertaNaoLido: {
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.borderLight,
     opacity: 1,
   },
   alertaHeader: {
@@ -853,13 +838,11 @@ const styles = StyleSheet.create({
   },
   alertaMensagem: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textPrimary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     marginBottom: 4,
   },
   alertaTempo: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textSecondary,
   },
   alertaDot: {
     width: 8,
@@ -876,21 +859,18 @@ const styles = StyleSheet.create({
   acaoButton: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
   },
   acaoText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
-    color: COLORS.textPrimary,
     marginTop: 8,
     textAlign: 'center',
   },
   dicaContainer: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: COLORS.goldLight,
     borderRadius: 8,
     padding: 16,
   },
@@ -901,12 +881,10 @@ const styles = StyleSheet.create({
   dicaTitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
     marginBottom: 4,
   },
   dicaText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
     lineHeight: TYPOGRAPHY.lineHeight.relaxed * TYPOGRAPHY.fontSize.sm,
   },
 });
