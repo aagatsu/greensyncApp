@@ -6,16 +6,19 @@ import {
   Image, 
   TouchableOpacity, 
   ScrollView,
-  StatusBar 
+  StatusBar,
+  KeyboardAvoidingView,
+  Platform 
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from '@/constants/Cores';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 export default function DetalhesPlanta() {
   const params = useLocalSearchParams(); 
   const router = useRouter();
+  const { colors } = useTheme(); // NOVO HOOK
 
   // Captura o parâmetro "id"
   const id = params.id;
@@ -68,15 +71,20 @@ export default function DetalhesPlanta() {
 
   if (!planta) {
     return (
-      <View style={styles.container}>
-        <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
+        <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
         <View style={styles.errorContainer}>
-          <FontAwesome5 name="exclamation-triangle" size={50} color={COLORS.secondary} />
-          <Text style={styles.errorTitle}>Planta não encontrada</Text>
-          <Text style={styles.errorText}>A planta que você está procurando não existe.</Text>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <FontAwesome5 name="arrow-left" size={16} color={COLORS.white} />
-            <Text style={styles.backButtonText}>Voltar</Text>
+          <FontAwesome5 name="exclamation-triangle" size={50} color={colors.secondary} />
+          <Text style={[styles.errorTitle, { color: colors.primary }]}>Planta não encontrada</Text>
+          <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+            A planta que você está procurando não existe.
+          </Text>
+          <TouchableOpacity 
+            style={[styles.backButton, { backgroundColor: colors.primary }]} 
+            onPress={() => router.back()}
+          >
+            <FontAwesome5 name="arrow-left" size={16} color={colors.white} />
+            <Text style={[styles.backButtonText, { color: colors.white }]}>Voltar</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -84,116 +92,144 @@ export default function DetalhesPlanta() {
   }
 
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor={COLORS.primary} barStyle="light-content" />
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
       
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <FontAwesome5 name="arrow-left" size={20} color={COLORS.white} />
+      <View style={[styles.header, { backgroundColor: colors.primary }]}>
+        <TouchableOpacity 
+          style={[styles.backButton, { backgroundColor: 'rgba(255, 255, 255, 0.2)' }]} 
+          onPress={() => router.back()}
+        >
+          <FontAwesome5 name="arrow-left" size={20} color={colors.white} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Detalhes da Planta</Text>
+        <Text style={[styles.headerTitle, { color: colors.white }]}>Detalhes da Planta</Text>
         <View style={styles.headerSpacer} />
       </View>
 
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <ScrollView 
+        style={styles.scrollView} 
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Imagem e Nome */}
         <View style={styles.imageSection}>
-          <Image source={planta.imagem} style={styles.image} />
+          <Image 
+            source={planta.imagem} 
+            style={[styles.image, { borderColor: colors.greenLight }]} 
+          />
           <View style={styles.titleContainer}>
-            <Text style={styles.name}>{planta.nome}</Text>
-            <View style={styles.tag}>
-              <Text style={styles.tagText}>{planta.tipo}</Text>
+            <Text style={[styles.name, { color: colors.primary }]}>{planta.nome}</Text>
+            <View style={[styles.tag, { backgroundColor: colors.greenLight }]}>
+              <Text style={[styles.tagText, { color: colors.primary }]}>{planta.tipo}</Text>
             </View>
           </View>
         </View>
 
         {/* Descrição */}
-        <View style={styles.section}>
+        <View style={[styles.section, { backgroundColor: colors.surface }]}>
           <View style={styles.sectionHeader}>
-            <FontAwesome5 name="file-alt" size={18} color={COLORS.primary} />
-            <Text style={styles.sectionTitle}>Descrição</Text>
+            <FontAwesome5 name="file-alt" size={18} color={colors.primary} />
+            <Text style={[styles.sectionTitle, { color: colors.primary }]}>Descrição</Text>
           </View>
-          <Text style={styles.description}>{planta.descricao}</Text>
+          <Text style={[styles.description, { color: colors.textSecondary }]}>
+            {planta.descricao}
+          </Text>
         </View>
 
         {/* Informações de Cultivo */}
-        <View style={styles.section}>
+        <View style={[styles.section, { backgroundColor: colors.surface }]}>
           <View style={styles.sectionHeader}>
-            <FontAwesome5 name="seedling" size={18} color={COLORS.primary} />
-            <Text style={styles.sectionTitle}>Informações de Cultivo</Text>
+            <FontAwesome5 name="seedling" size={18} color={colors.primary} />
+            <Text style={[styles.sectionTitle, { color: colors.primary }]}>Informações de Cultivo</Text>
           </View>
           
           <View style={styles.infoGrid}>
-            <View style={styles.infoItem}>
-              <FontAwesome5 name="thermometer-half" size={16} color={COLORS.primary} />
-              <Text style={styles.infoLabel}>Temperatura</Text>
-              <Text style={styles.infoValue}>{planta.temperatura}</Text>
+            <View style={[styles.infoItem, { backgroundColor: colors.gray50 }]}>
+              <FontAwesome5 name="thermometer-half" size={16} color={colors.primary} />
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Temperatura</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{planta.temperatura}</Text>
             </View>
             
-            <View style={styles.infoItem}>
-              <FontAwesome5 name="sun" size={16} color={COLORS.primary} />
-              <Text style={styles.infoLabel}>Luminosidade</Text>
-              <Text style={styles.infoValue}>{planta.luminosidade}</Text>
+            <View style={[styles.infoItem, { backgroundColor: colors.gray50 }]}>
+              <FontAwesome5 name="sun" size={16} color={colors.primary} />
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Luminosidade</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{planta.luminosidade}</Text>
             </View>
             
-            <View style={styles.infoItem}>
-              <FontAwesome5 name="tint" size={16} color={COLORS.primary} />
-              <Text style={styles.infoLabel}>Rega</Text>
-              <Text style={styles.infoValue}>{planta.rega}</Text>
+            <View style={[styles.infoItem, { backgroundColor: colors.gray50 }]}>
+              <FontAwesome5 name="tint" size={16} color={colors.primary} />
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Rega</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{planta.rega}</Text>
             </View>
             
-            <View style={styles.infoItem}>
-              <FontAwesome5 name="chart-line" size={16} color={COLORS.primary} />
-              <Text style={styles.infoLabel}>Dificuldade</Text>
-              <Text style={styles.infoValue}>{planta.dificuldade}</Text>
+            <View style={[styles.infoItem, { backgroundColor: colors.gray50 }]}>
+              <FontAwesome5 name="chart-line" size={16} color={colors.primary} />
+              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Dificuldade</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{planta.dificuldade}</Text>
             </View>
           </View>
         </View>
 
         {/* Curiosidade */}
-        <View style={styles.section}>
+        <View style={[styles.section, { backgroundColor: colors.surface }]}>
           <View style={styles.sectionHeader}>
-            <FontAwesome5 name="lightbulb" size={18} color={COLORS.primary} />
-            <Text style={styles.sectionTitle}>Curiosidade</Text>
+            <FontAwesome5 name="lightbulb" size={18} color={colors.primary} />
+            <Text style={[styles.sectionTitle, { color: colors.primary }]}>Curiosidade</Text>
           </View>
-          <View style={styles.curiosityCard}>
-            <Text style={styles.curiosityText}>{planta.curiosidade}</Text>
+          <View style={[styles.curiosityCard, { 
+            backgroundColor: colors.goldLight,
+            borderLeftColor: colors.secondary 
+          }]}>
+            <Text style={[styles.curiosityText, { color: colors.textPrimary }]}>
+              {planta.curiosidade}
+            </Text>
           </View>
         </View>
 
         {/* Ações */}
         <View style={styles.actionsSection}>
-          <TouchableOpacity style={styles.actionButton} onPress={handleEditar}>
-            <FontAwesome5 name="edit" size={16} color={COLORS.white} />
-            <Text style={styles.actionButtonText}>Editar Planta</Text>
+          <TouchableOpacity 
+            style={[styles.actionButton, { backgroundColor: colors.primary }]} 
+            onPress={handleEditar}
+          >
+            <FontAwesome5 name="edit" size={16} color={colors.white} />
+            <Text style={[styles.actionButtonText, { color: colors.white }]}>Editar Planta</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.secondaryActionButton}>
-            <FontAwesome5 name="trash" size={16} color={COLORS.primary} />
-            <Text style={styles.secondaryActionButtonText}>Remover</Text>
+          <TouchableOpacity style={[
+            styles.secondaryActionButton, { 
+              backgroundColor: colors.surface,
+              borderColor: colors.border 
+            }
+          ]}>
+            <FontAwesome5 name="trash" size={16} color={colors.primary} />
+            <Text style={[styles.secondaryActionButtonText, { color: colors.primary }]}>
+              Remover
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.primary,
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 20,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -201,12 +237,10 @@ const styles = StyleSheet.create({
   backButton: {
     padding: 8,
     borderRadius: 8,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
   },
   headerTitle: {
     fontSize: TYPOGRAPHY.fontSize['2xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.white,
     textAlign: 'center',
     flex: 1,
   },
@@ -215,6 +249,8 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  scrollContent: {
     padding: 20,
   },
   imageSection: {
@@ -227,9 +263,8 @@ const styles = StyleSheet.create({
     borderRadius: 75,
     marginBottom: 16,
     borderWidth: 4,
-    borderColor: COLORS.greenLight,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -240,28 +275,24 @@ const styles = StyleSheet.create({
   name: {
     fontSize: TYPOGRAPHY.fontSize['4xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     marginBottom: 8,
     textAlign: 'center',
   },
   tag: {
-    backgroundColor: COLORS.greenLight,
     paddingHorizontal: 16,
     paddingVertical: 6,
     borderRadius: 20,
   },
   tagText: {
-    color: COLORS.primary,
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
   },
   section: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -274,12 +305,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.fontSize.xl,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     marginLeft: 8,
   },
   description: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textSecondary,
     lineHeight: TYPOGRAPHY.lineHeight.relaxed * TYPOGRAPHY.fontSize.lg,
   },
   infoGrid: {
@@ -289,7 +318,6 @@ const styles = StyleSheet.create({
   },
   infoItem: {
     width: '48%',
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
@@ -297,25 +325,20 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textSecondary,
     marginTop: 8,
     marginBottom: 4,
   },
   infoValue: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
   },
   curiosityCard: {
-    backgroundColor: COLORS.goldLight,
     borderRadius: 8,
     padding: 16,
     borderLeftWidth: 4,
-    borderLeftColor: COLORS.secondary,
   },
   curiosityText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textPrimary,
     fontStyle: 'italic',
     lineHeight: TYPOGRAPHY.lineHeight.normal * TYPOGRAPHY.fontSize.sm,
   },
@@ -329,19 +352,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.primary,
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderRadius: 8,
     marginRight: 8,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   actionButtonText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 8,
@@ -351,16 +372,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderRadius: 8,
     marginLeft: 8,
   },
   secondaryActionButtonText: {
-    color: COLORS.primary,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 8,
@@ -370,24 +388,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: COLORS.background,
   },
   errorTitle: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     marginTop: 16,
     marginBottom: 8,
   },
   errorText: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textSecondary,
     textAlign: 'center',
     marginBottom: 30,
     lineHeight: TYPOGRAPHY.lineHeight.normal * TYPOGRAPHY.fontSize.lg,
   },
   backButtonText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 8,

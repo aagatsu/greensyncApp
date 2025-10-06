@@ -4,11 +4,13 @@ import {
   Text, 
   StyleSheet, 
   ScrollView, 
-  TouchableOpacity 
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from '@/constants/Cores';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 // Tipo para os dados de cada sensor
@@ -22,17 +24,19 @@ type SensorCardProps = {
 
 // Componente para exibir cada sensor
 const SensorCard: React.FC<SensorCardProps> = ({ label, value, unit, status, icon }) => {
+  const { colors } = useTheme(); // NOVO HOOK
+
   // Define a cor do status dinamicamente
   const getStatusColor = () => {
     switch (status) {
       case "ok":
-        return COLORS.success;
+        return colors.success;
       case "alert":
-        return COLORS.warning;
+        return colors.warning;
       case "off":
-        return COLORS.error;
+        return colors.error;
       default:
-        return COLORS.textSecondary;
+        return colors.textSecondary;
     }
   };
 
@@ -52,29 +56,29 @@ const SensorCard: React.FC<SensorCardProps> = ({ label, value, unit, status, ico
   const getIconColor = () => {
     switch (status) {
       case "ok":
-        return COLORS.success;
+        return colors.success;
       case "alert":
-        return COLORS.warning;
+        return colors.warning;
       case "off":
-        return COLORS.error;
+        return colors.error;
       default:
-        return COLORS.textSecondary;
+        return colors.textSecondary;
     }
   };
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: colors.gray50 }]}>
       <View style={styles.cardHeader}>
-        <View style={styles.iconContainer}>
+        <View style={[styles.iconContainer, { backgroundColor: colors.surface }]}>
           <FontAwesome5 name={icon} size={20} color={getIconColor()} />
         </View>
-        <Text style={styles.cardLabel}>{label}</Text>
+        <Text style={[styles.cardLabel, { color: colors.textPrimary }]}>{label}</Text>
       </View>
       
       <View style={styles.cardValueContainer}>
-        <Text style={styles.cardValue}>
+        <Text style={[styles.cardValue, { color: colors.primary }]}>
           {value}
-          {unit && <Text style={styles.cardUnit}> {unit}</Text>}
+          {unit && <Text style={[styles.cardUnit, { color: colors.textSecondary }]}> {unit}</Text>}
         </Text>
       </View>
 
@@ -93,6 +97,7 @@ const SensorCard: React.FC<SensorCardProps> = ({ label, value, unit, status, ico
 export default function DetalhesEstufa() {
   const { id } = useLocalSearchParams(); // Pegando o ID da estufa selecionada
   const router = useRouter();
+  const { colors } = useTheme(); // NOVO HOOK
 
   // 🔹 Dados de exemplo (depois será integrado com Firebase)
   const estufaInfo = {
@@ -110,94 +115,103 @@ export default function DetalhesEstufa() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.box}>
-        {/* Cabeçalho */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-            <FontAwesome5 name="arrow-left" size={20} color={COLORS.primary} />
-          </TouchableOpacity>
-          <Text style={styles.title}>Detalhes da Estufa</Text>
-          <View style={styles.headerSpacer} />
-        </View>
-
-        {/* Informações da Estufa */}
-        <View style={styles.estufaInfo}>
-          <View style={styles.estufaHeader}>
-            <FontAwesome5 name="warehouse" size={24} color={COLORS.primary} />
-            <Text style={styles.estufaNome}>{estufaInfo.nome}</Text>
-          </View>
-          <View style={styles.estufaDetails}>
-            <View style={styles.detailItem}>
-              <FontAwesome5 name="map-marker-alt" size={14} color={COLORS.textSecondary} />
-              <Text style={styles.detailText}>{estufaInfo.local}</Text>
-            </View>
-            <View style={styles.detailItem}>
-              <FontAwesome5 name="seedling" size={14} color={COLORS.textSecondary} />
-              <Text style={styles.detailText}>{estufaInfo.plantas} plantas</Text>
-            </View>
-            <View style={styles.detailItem}>
-              <FontAwesome5 name="hashtag" size={14} color={COLORS.textSecondary} />
-              <Text style={styles.detailText}>ID: {id}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Título dos Sensores */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Sensores e Controles</Text>
-          <Text style={styles.sectionSubtitle}>Status em tempo real</Text>
-        </View>
-
-        {/* Grid de Sensores */}
-        <View style={styles.sensorsGrid}>
-          {estufaInfo.sensores.map((sensor, index) => (
-            <SensorCard
-              key={index}
-              label={sensor.label}
-              value={sensor.value}
-              unit={sensor.unit}
-              status={sensor.status as "ok" | "alert" | "off"}
-              icon={sensor.icon}
-            />
-          ))}
-        </View>
-
-        {/* Ações Rápidas */}
-        <View style={styles.actionsSection}>
-          <Text style={styles.sectionTitle}>Ações Rápidas</Text>
-          <View style={styles.actionsGrid}>
-            <TouchableOpacity style={styles.actionButton}>
-              <FontAwesome5 name="cog" size={20} color={COLORS.white} />
-              <Text style={styles.actionText}>Configurar</Text>
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={[styles.box, { backgroundColor: colors.surface }]}>
+          {/* Cabeçalho */}
+          <View style={styles.header}>
+            <TouchableOpacity 
+              style={[styles.backButton, { borderColor: colors.border }]} 
+              onPress={() => router.back()}
+            >
+              <FontAwesome5 name="arrow-left" size={20} color={colors.primary} />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <FontAwesome5 name="chart-line" size={20} color={COLORS.white} />
-              <Text style={styles.actionText}>Relatório</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.actionButton}>
-              <FontAwesome5 name="history" size={20} color={COLORS.white} />
-              <Text style={styles.actionText}>Histórico</Text>
-            </TouchableOpacity>
+            <Text style={[styles.title, { color: colors.primary }]}>Detalhes da Estufa</Text>
+            <View style={styles.headerSpacer} />
+          </View>
+
+          {/* Informações da Estufa */}
+          <View style={[styles.estufaInfo, { backgroundColor: colors.gray50 }]}>
+            <View style={styles.estufaHeader}>
+              <FontAwesome5 name="warehouse" size={24} color={colors.primary} />
+              <Text style={[styles.estufaNome, { color: colors.textPrimary }]}>{estufaInfo.nome}</Text>
+            </View>
+            <View style={styles.estufaDetails}>
+              <View style={styles.detailItem}>
+                <FontAwesome5 name="map-marker-alt" size={14} color={colors.textSecondary} />
+                <Text style={[styles.detailText, { color: colors.textSecondary }]}>{estufaInfo.local}</Text>
+              </View>
+              <View style={styles.detailItem}>
+                <FontAwesome5 name="seedling" size={14} color={colors.textSecondary} />
+                <Text style={[styles.detailText, { color: colors.textSecondary }]}>{estufaInfo.plantas} plantas</Text>
+              </View>
+              <View style={styles.detailItem}>
+                <FontAwesome5 name="hashtag" size={14} color={colors.textSecondary} />
+                <Text style={[styles.detailText, { color: colors.textSecondary }]}>ID: {id}</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Título dos Sensores */}
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Sensores e Controles</Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>Status em tempo real</Text>
+          </View>
+
+          {/* Grid de Sensores */}
+          <View style={styles.sensorsGrid}>
+            {estufaInfo.sensores.map((sensor, index) => (
+              <SensorCard
+                key={index}
+                label={sensor.label}
+                value={sensor.value}
+                unit={sensor.unit}
+                status={sensor.status as "ok" | "alert" | "off"}
+                icon={sensor.icon}
+              />
+            ))}
+          </View>
+
+          {/* Ações Rápidas */}
+          <View style={styles.actionsSection}>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Ações Rápidas</Text>
+            <View style={styles.actionsGrid}>
+              <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.primary }]}>
+                <FontAwesome5 name="cog" size={20} color={colors.white} />
+                <Text style={[styles.actionText, { color: colors.white }]}>Configurar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.primary }]}>
+                <FontAwesome5 name="chart-line" size={20} color={colors.white} />
+                <Text style={[styles.actionText, { color: colors.white }]}>Relatório</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.primary }]}>
+                <FontAwesome5 name="history" size={20} color={colors.white} />
+                <Text style={[styles.actionText, { color: colors.white }]}>Histórico</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  scrollContent: {
     flexGrow: 1,
-    backgroundColor: COLORS.background,
     padding: 16,
   },
   box: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 20,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -212,12 +226,11 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    width: 40,
   },
   title: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     textAlign: "center",
     flex: 1,
   },
@@ -225,7 +238,6 @@ const styles = StyleSheet.create({
     width: 40,
   },
   estufaInfo: {
-    backgroundColor: COLORS.gray50,
     borderRadius: 12,
     padding: 16,
     marginBottom: 24,
@@ -238,7 +250,6 @@ const styles = StyleSheet.create({
   estufaNome: {
     fontSize: TYPOGRAPHY.fontSize['2xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
     marginLeft: 12,
   },
   estufaDetails: {
@@ -254,7 +265,6 @@ const styles = StyleSheet.create({
   },
   detailText: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textSecondary,
     marginLeft: 6,
   },
   sectionHeader: {
@@ -263,23 +273,19 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.fontSize.xl,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
     marginBottom: 4,
   },
   sectionSubtitle: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textSecondary,
   },
   sensorsGrid: {
     marginBottom: 24,
   },
   card: {
-    backgroundColor: COLORS.gray50,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
     borderLeftWidth: 4,
-    borderLeftColor: COLORS.border,
   },
   cardHeader: {
     flexDirection: "row",
@@ -290,12 +296,11 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: COLORS.white,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
     elevation: 1,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 1,
@@ -303,7 +308,6 @@ const styles = StyleSheet.create({
   cardLabel: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
   },
   cardValueContainer: {
     marginBottom: 8,
@@ -311,12 +315,10 @@ const styles = StyleSheet.create({
   cardValue: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
   },
   cardUnit: {
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.normal,
-    color: COLORS.textSecondary,
   },
   statusContainer: {
     flexDirection: "row",
@@ -342,7 +344,6 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    backgroundColor: COLORS.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -350,13 +351,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginHorizontal: 4,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   actionText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.xs,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 6,

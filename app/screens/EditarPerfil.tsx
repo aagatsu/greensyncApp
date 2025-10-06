@@ -13,14 +13,15 @@ import {
 } from "react-native";
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 import { FontAwesome5 } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { COLORS } from '@/constants/Cores';
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 export default function EditarPerfil() {
   const router = useRouter();
   const { usuario, logout } = useAuth();
+  const { colors } = useTheme(); // NOVO HOOK
 
   const [nome, setNome] = useState(usuario?.nome || "");
   const [email, setEmail] = useState(usuario?.email || "");
@@ -130,23 +131,26 @@ export default function EditarPerfil() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.box}>
+        <View style={[styles.box, { backgroundColor: colors.surface }]}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={handleVoltar}>
-              <FontAwesome5 name="arrow-left" size={20} color={COLORS.primary} />
+            <TouchableOpacity 
+              style={[styles.backButton, { borderColor: colors.border }]} 
+              onPress={handleVoltar}
+            >
+              <FontAwesome5 name="arrow-left" size={20} color={colors.primary} />
             </TouchableOpacity>
-            <Text style={styles.title}>Editar Perfil</Text>
+            <Text style={[styles.title, { color: colors.primary }]}>Editar Perfil</Text>
             <View style={styles.headerSpacer} />
           </View>
 
           {/* Foto de Perfil */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Foto de Perfil</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Foto de Perfil</Text>
             
             <View style={styles.fotoContainer}>
               {imagemPerfil ? (
@@ -154,39 +158,39 @@ export default function EditarPerfil() {
                   <Image source={{ uri: imagemPerfil }} style={styles.fotoPerfil} />
                   <View style={styles.fotoActions}>
                     <TouchableOpacity 
-                      style={styles.fotoActionButton}
+                      style={[styles.fotoActionButton, { backgroundColor: colors.success }]}
                       onPress={escolherImagem}
                     >
-                      <FontAwesome5 name="sync" size={14} color={COLORS.white} />
-                      <Text style={styles.fotoActionText}>Trocar</Text>
+                      <FontAwesome5 name="sync" size={14} color={colors.white} />
+                      <Text style={[styles.fotoActionText, { color: colors.white }]}>Trocar</Text>
                     </TouchableOpacity>
                     <TouchableOpacity 
-                      style={[styles.fotoActionButton, styles.removeButton]}
+                      style={[styles.fotoActionButton, styles.removeButton, { backgroundColor: colors.error }]}
                       onPress={removerImagem}
                     >
-                      <FontAwesome5 name="trash" size={14} color={COLORS.white} />
-                      <Text style={styles.fotoActionText}>Remover</Text>
+                      <FontAwesome5 name="trash" size={14} color={colors.white} />
+                      <Text style={[styles.fotoActionText, { color: colors.white }]}>Remover</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
               ) : (
                 <View style={styles.fotoPlaceholder}>
-                  <FontAwesome5 name="user" size={40} color={COLORS.textDisabled} />
+                  <FontAwesome5 name="user" size={40} color={colors.textDisabled} />
                   <View style={styles.fotoOptions}>
                     <TouchableOpacity 
-                      style={styles.fotoOptionButton}
+                      style={[styles.fotoOptionButton, { backgroundColor: colors.gray50 }]}
                       onPress={escolherImagem}
                     >
-                      <FontAwesome5 name="image" size={16} color={COLORS.success} />
-                      <Text style={styles.fotoOptionText}>Galeria</Text>
+                      <FontAwesome5 name="image" size={16} color={colors.success} />
+                      <Text style={[styles.fotoOptionText, { color: colors.textPrimary }]}>Galeria</Text>
                     </TouchableOpacity>
                     
                     <TouchableOpacity 
-                      style={styles.fotoOptionButton}
+                      style={[styles.fotoOptionButton, { backgroundColor: colors.gray50 }]}
                       onPress={tirarFoto}
                     >
-                      <FontAwesome5 name="camera" size={16} color={COLORS.info} />
-                      <Text style={styles.fotoOptionText}>Câmera</Text>
+                      <FontAwesome5 name="camera" size={16} color={colors.info} />
+                      <Text style={[styles.fotoOptionText, { color: colors.textPrimary }]}>Câmera</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -196,47 +200,70 @@ export default function EditarPerfil() {
 
           {/* Informações Pessoais */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Informações Pessoais</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Informações Pessoais</Text>
             
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>Nome Completo *</Text>
+              <Text style={[styles.label, { color: colors.textPrimary }]}>Nome Completo *</Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input, 
+                  { 
+                    backgroundColor: colors.gray50,
+                    borderColor: colors.borderLight,
+                    color: colors.textPrimary
+                  }
+                ]}
                 placeholder="Seu nome completo"
-                placeholderTextColor={COLORS.textDisabled}
+                placeholderTextColor={colors.textDisabled}
                 value={nome}
                 onChangeText={setNome}
                 maxLength={50}
               />
               {nome.length > 0 && (
-                <Text style={styles.charCount}>{nome.length}/50</Text>
+                <Text style={[styles.charCount, { color: colors.textDisabled }]}>
+                  {nome.length}/50
+                </Text>
               )}
             </View>
 
             <View style={styles.inputContainer}>
-              <Text style={styles.label}>E-mail *</Text>
+              <Text style={[styles.label, { color: colors.textPrimary }]}>E-mail *</Text>
               <TextInput
-                style={styles.input}
+                style={[
+                  styles.input, 
+                  { 
+                    backgroundColor: colors.gray50,
+                    borderColor: colors.borderLight,
+                    color: colors.textPrimary
+                  }
+                ]}
                 placeholder="seu@email.com"
-                placeholderTextColor={COLORS.textDisabled}
+                placeholderTextColor={colors.textDisabled}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 value={email}
                 onChangeText={setEmail}
               />
             </View>
-
           </View>
 
           {/* Biografia */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Biografia</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Biografia</Text>
             
             <View style={styles.inputContainer}>
               <TextInput
-                style={[styles.input, styles.textArea]}
+                style={[
+                  styles.input, 
+                  styles.textArea, 
+                  { 
+                    backgroundColor: colors.gray50,
+                    borderColor: colors.borderLight,
+                    color: colors.textPrimary
+                  }
+                ]}
                 placeholder="Conte um pouco sobre você e seu interesse por plantas..."
-                placeholderTextColor={COLORS.textDisabled}
+                placeholderTextColor={colors.textDisabled}
                 value={bio}
                 onChangeText={setBio}
                 multiline
@@ -245,18 +272,34 @@ export default function EditarPerfil() {
                 maxLength={200}
               />
               {bio.length > 0 && (
-                <Text style={styles.charCount}>{bio.length}/200</Text>
+                <Text style={[styles.charCount, { color: colors.textDisabled }]}>
+                  {bio.length}/200
+                </Text>
               )}
             </View>
           </View>
 
           {/* Indicadores de Validação */}
-          <View style={styles.indicadores}>
-            <Text style={styles.indicadorTitulo}>Validação do formulário:</Text>
-            <Text style={nome.length > 0 ? styles.indicadorOk : styles.indicadorNok}>
+          <View style={[
+            styles.indicadores, 
+            { 
+              backgroundColor: colors.gray50,
+              borderLeftColor: colors.success
+            }
+          ]}>
+            <Text style={[styles.indicadorTitulo, { color: colors.textSecondary }]}>
+              Validação do formulário:
+            </Text>
+            <Text style={[
+              nome.length > 0 ? styles.indicadorOk : styles.indicadorNok,
+              { color: nome.length > 0 ? colors.success : colors.error }
+            ]}>
               {nome.length > 0 ? "✓ Nome preenchido" : "✗ Nome obrigatório"}
             </Text>
-            <Text style={validarEmail(email) ? styles.indicadorOk : styles.indicadorNok}>
+            <Text style={[
+              validarEmail(email) ? styles.indicadorOk : styles.indicadorNok,
+              { color: validarEmail(email) ? colors.success : colors.error }
+            ]}>
               {validarEmail(email) ? "✓ E-mail válido" : "✗ E-mail inválido"}
             </Text>
           </View>
@@ -266,32 +309,46 @@ export default function EditarPerfil() {
             <TouchableOpacity 
               style={[
                 styles.botaoSalvar, 
-                (!validarFormulario() || salvando) && styles.botaoDesabilitado
+                { backgroundColor: colors.primary },
+                (!validarFormulario() || salvando) && [
+                  styles.botaoDesabilitado, 
+                  { backgroundColor: colors.gray400 }
+                ]
               ]} 
               onPress={handleSalvar}
               disabled={!validarFormulario() || salvando}
             >
               {salvando ? (
-                <FontAwesome5 name="spinner" size={16} color={COLORS.white} />
+                <FontAwesome5 name="spinner" size={16} color={colors.white} />
               ) : (
-                <FontAwesome5 name="save" size={16} color={COLORS.white} />
+                <FontAwesome5 name="save" size={16} color={colors.white} />
               )}
-              <Text style={styles.botaoSalvarText}>
+              <Text style={[styles.botaoSalvarText, { color: colors.white }]}>
                 {salvando ? "Salvando..." : "Salvar Alterações"}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
-              style={styles.botaoCancelar} 
+              style={[
+                styles.botaoCancelar, 
+                { 
+                  borderColor: colors.border,
+                  backgroundColor: colors.surface
+                }
+              ]} 
               onPress={handleCancelar}
               disabled={salvando}
             >
-              <FontAwesome5 name="times" size={16} color={COLORS.textSecondary} />
-              <Text style={styles.botaoCancelarText}>Cancelar</Text>
+              <FontAwesome5 name="times" size={16} color={colors.textSecondary} />
+              <Text style={[styles.botaoCancelarText, { color: colors.textSecondary }]}>
+                Cancelar
+              </Text>
             </TouchableOpacity>
           </View>
 
-          <Text style={styles.requiredText}>* Campos obrigatórios</Text>
+          <Text style={[styles.requiredText, { color: colors.textDisabled }]}>
+            * Campos obrigatórios
+          </Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -301,18 +358,16 @@ export default function EditarPerfil() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContainer: {
     flexGrow: 1,
     padding: 16,
   },
   box: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 24,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -327,12 +382,11 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    width: 40,
   },
   title: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     textAlign: "center",
     flex: 1,
   },
@@ -345,7 +399,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
     marginBottom: 16,
   },
   fotoContainer: {
@@ -373,7 +426,6 @@ const styles = StyleSheet.create({
   fotoOptionButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.gray50,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 6,
@@ -382,7 +434,6 @@ const styles = StyleSheet.create({
   fotoOptionText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginLeft: 6,
   },
   fotoActions: {
@@ -391,7 +442,6 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   fotoActionButton: {
-    backgroundColor: COLORS.success,
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 16,
@@ -399,10 +449,9 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   removeButton: {
-    backgroundColor: COLORS.error,
+    // Cor definida inline
   },
   fotoActionText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 6,
@@ -413,18 +462,14 @@ const styles = StyleSheet.create({
   label: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: COLORS.gray50,
     borderWidth: 1,
-    borderColor: COLORS.borderLight,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textPrimary,
   },
   textArea: {
     height: 100,
@@ -432,47 +477,27 @@ const styles = StyleSheet.create({
   },
   charCount: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textDisabled,
     textAlign: "right",
     marginTop: 4,
   },
-  alterarSenhaButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: COLORS.gray50,
-    borderRadius: 8,
-    padding: 16,
-  },
-  alterarSenhaText: {
-    flex: 1,
-    fontSize: TYPOGRAPHY.fontSize.lg,
-    fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
-    marginLeft: 12,
-  },
   indicadores: {
-    backgroundColor: COLORS.gray50,
     padding: 16,
     borderRadius: 8,
     marginBottom: 20,
     borderLeftWidth: 4,
-    borderLeftColor: COLORS.success,
   },
   indicadorTitulo: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginBottom: 10,
-    color: COLORS.textSecondary,
   },
   indicadorOk: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.success,
     marginBottom: 6,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   indicadorNok: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.error,
     marginBottom: 6,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
@@ -480,7 +505,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   botaoSalvar: {
-    backgroundColor: COLORS.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -488,16 +512,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   botaoDesabilitado: {
-    backgroundColor: COLORS.gray400,
+    // Cor definida inline
   },
   botaoSalvarText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginLeft: 8,
@@ -509,17 +532,14 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   botaoCancelarText: {
-    color: COLORS.textSecondary,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 8,
   },
   requiredText: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.textDisabled,
     textAlign: "center",
     marginTop: 16,
   },
