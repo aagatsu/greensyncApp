@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from '@/constants/Cores';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 export default function Cadastro() {
@@ -21,6 +21,7 @@ export default function Cadastro() {
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const router = useRouter();
+  const { colors } = useTheme(); // NOVO HOOK
 
   const validarEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -48,21 +49,28 @@ export default function Cadastro() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.box}>
-          <Text style={styles.title}>GreenSync</Text>
-          <Text style={styles.subtitle}>Criar nova conta</Text>
+        <View style={[styles.box, { backgroundColor: colors.surface }]}>
+          <Text style={[styles.title, { color: colors.primary }]}>GreenSync</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Criar nova conta</Text>
           
           {/* Campo Nome */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Nome Completo *</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>Nome Completo *</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input, 
+                { 
+                  backgroundColor: colors.gray50,
+                  borderColor: colors.border,
+                  color: colors.textPrimary
+                }
+              ]}
               placeholder="Digite seu nome completo"
-              placeholderTextColor={COLORS.textDisabled}
+              placeholderTextColor={colors.textDisabled}
               autoCapitalize="words"
               autoCorrect={false}
               value={nome}
@@ -70,17 +78,26 @@ export default function Cadastro() {
               maxLength={50}
             />
             {nome.length > 0 && (
-              <Text style={styles.charCount}>{nome.length}/50</Text>
+              <Text style={[styles.charCount, { color: colors.textDisabled }]}>
+                {nome.length}/50
+              </Text>
             )}
           </View>
           
           {/* Campo Email */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>E-mail *</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>E-mail *</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input, 
+                { 
+                  backgroundColor: colors.gray50,
+                  borderColor: colors.border,
+                  color: colors.textPrimary
+                }
+              ]}
               placeholder="seu@email.com"
-              placeholderTextColor={COLORS.textDisabled}
+              placeholderTextColor={colors.textDisabled}
               keyboardType="email-address"
               autoCapitalize="none"
               autoCorrect={false}
@@ -91,28 +108,44 @@ export default function Cadastro() {
           
           {/* Campo Senha */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Senha *</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>Senha *</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input, 
+                { 
+                  backgroundColor: colors.gray50,
+                  borderColor: colors.border,
+                  color: colors.textPrimary
+                }
+              ]}
               placeholder="Mínimo 6 caracteres"
-              placeholderTextColor={COLORS.textDisabled}
+              placeholderTextColor={colors.textDisabled}
               secureTextEntry
               value={senha}
               onChangeText={setSenha}
               maxLength={20}
             />
             {senha.length > 0 && (
-              <Text style={styles.charCount}>{senha.length}/20</Text>
+              <Text style={[styles.charCount, { color: colors.textDisabled }]}>
+                {senha.length}/20
+              </Text>
             )}
           </View>
           
           {/* Campo Confirmar Senha */}
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Confirmar Senha *</Text>
+            <Text style={[styles.label, { color: colors.textPrimary }]}>Confirmar Senha *</Text>
             <TextInput
-              style={styles.input}
+              style={[
+                styles.input, 
+                { 
+                  backgroundColor: colors.gray50,
+                  borderColor: colors.border,
+                  color: colors.textPrimary
+                }
+              ]}
               placeholder="Digite a senha novamente"
-              placeholderTextColor={COLORS.textDisabled}
+              placeholderTextColor={colors.textDisabled}
               secureTextEntry
               value={confirmarSenha}
               onChangeText={setConfirmarSenha}
@@ -121,42 +154,70 @@ export default function Cadastro() {
           </View>
 
           {/* Indicadores visuais de validação */}
-          <View style={styles.indicadores}>
-            <Text style={styles.indicadorTitulo}>Validação dos campos:</Text>
-            <Text style={nome.length > 2 ? styles.indicadorOk : styles.indicadorNok}>
+          <View style={[
+            styles.indicadores, 
+            { 
+              backgroundColor: colors.gray50,
+              borderLeftColor: colors.success
+            }
+          ]}>
+            <Text style={[styles.indicadorTitulo, { color: colors.textSecondary }]}>
+              Validação dos campos:
+            </Text>
+            <Text style={[
+              nome.length > 2 ? styles.indicadorOk : styles.indicadorNok,
+              { color: nome.length > 2 ? colors.success : colors.error }
+            ]}>
               {nome.length > 2 ? "✓ Nome válido (3+ caracteres)" : "✗ Nome muito curto"}
             </Text>
-            <Text style={validarEmail(email) ? styles.indicadorOk : styles.indicadorNok}>
+            <Text style={[
+              validarEmail(email) ? styles.indicadorOk : styles.indicadorNok,
+              { color: validarEmail(email) ? colors.success : colors.error }
+            ]}>
               {validarEmail(email) ? "✓ E-mail válido" : "✗ E-mail inválido"}
             </Text>
-            <Text style={senha.length >= 6 ? styles.indicadorOk : styles.indicadorNok}>
+            <Text style={[
+              senha.length >= 6 ? styles.indicadorOk : styles.indicadorNok,
+              { color: senha.length >= 6 ? colors.success : colors.error }
+            ]}>
               {senha.length >= 6 ? "✓ Senha forte (6+ caracteres)" : "✗ Senha fraca"}
             </Text>
-            <Text style={senha === confirmarSenha && senha.length > 0 ? styles.indicadorOk : styles.indicadorNok}>
+            <Text style={[
+              senha === confirmarSenha && senha.length > 0 ? styles.indicadorOk : styles.indicadorNok,
+              { color: senha === confirmarSenha && senha.length > 0 ? colors.success : colors.error }
+            ]}>
               {senha === confirmarSenha && senha.length > 0 ? "✓ Senhas coincidem" : "✗ Senhas diferentes"}
             </Text>
           </View>
           
           {/* Botão Cadastrar */}
           <TouchableOpacity 
-            style={styles.botaoCadastrar} 
+            style={[styles.botaoCadastrar, { backgroundColor: colors.primary }]} 
             onPress={handleCadastro}
           >
-            <FontAwesome5 name="user-plus" size={16} color={COLORS.white} />
-            <Text style={styles.textoBotao}>Criar Conta</Text>
+            <FontAwesome5 name="user-plus" size={16} color={colors.white} />
+            <Text style={[styles.textoBotao, { color: colors.white }]}>Criar Conta</Text>
           </TouchableOpacity>
           
           {/* Botão Voltar */}
           <TouchableOpacity 
-            style={styles.botaoVoltar} 
+            style={[
+              styles.botaoVoltar, 
+              { 
+                borderColor: colors.primary,
+                backgroundColor: colors.surface
+              }
+            ]} 
             onPress={handleVoltarLogin}
           >
-            <FontAwesome5 name="arrow-left" size={14} color={COLORS.primary} />
-            <Text style={styles.textoVoltar}>Voltar para o Login</Text>
+            <FontAwesome5 name="arrow-left" size={14} color={colors.primary} />
+            <Text style={[styles.textoVoltar, { color: colors.primary }]}>Voltar para o Login</Text>
           </TouchableOpacity>
 
           {/* Texto de campos obrigatórios */}
-          <Text style={styles.requiredText}>* Campos obrigatórios</Text>
+          <Text style={[styles.requiredText, { color: colors.textDisabled }]}>
+            * Campos obrigatórios
+          </Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -166,7 +227,6 @@ export default function Cadastro() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -174,11 +234,10 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   box: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 32,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -186,13 +245,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: TYPOGRAPHY.fontSize['5xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     marginBottom: 8,
     textAlign: "center",
   },
   subtitle: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textSecondary,
     marginBottom: 30,
     textAlign: "center",
   },
@@ -202,53 +259,42 @@ const styles = StyleSheet.create({
   label: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: COLORS.gray50,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textPrimary,
   },
   charCount: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textDisabled,
     textAlign: "right",
     marginTop: 4,
   },
   indicadores: {
-    backgroundColor: COLORS.gray50,
     padding: 16,
     borderRadius: 8,
     marginBottom: 25,
     borderLeftWidth: 4,
-    borderLeftColor: COLORS.success,
   },
   indicadorTitulo: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginBottom: 10,
-    color: COLORS.textSecondary,
   },
   indicadorOk: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.success,
     marginBottom: 6,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   indicadorNok: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.error,
     marginBottom: 6,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   botaoCadastrar: {
-    backgroundColor: COLORS.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -256,16 +302,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   botaoDesabilitado: {
-    backgroundColor: COLORS.gray400,
+    // Cor definida inline
   },
   textoBotao: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginLeft: 8,
@@ -277,18 +322,15 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.primary,
     marginBottom: 8,
   },
   textoVoltar: {
-    color: COLORS.primary,
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 8,
   },
   requiredText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textDisabled,
     textAlign: "center",
     marginTop: 10,
   },

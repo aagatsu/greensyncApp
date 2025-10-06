@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from '@/constants/Cores';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 type Props = {
@@ -24,6 +24,7 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
   const [senha, setSenha] = useState("");
   const [carregando, setCarregando] = useState(false);
   const router = useRouter();
+  const { colors } = useTheme(); // NOVO HOOK
 
   const validarEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -69,20 +70,27 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
-      <View style={styles.box}>
-        <Text style={styles.title}>GreenSync</Text>
-        <Text style={styles.subtitle}>Faça login em sua conta</Text>
+      <View style={[styles.box, { backgroundColor: colors.surface }]}>
+        <Text style={[styles.title, { color: colors.primary }]}>GreenSync</Text>
+        <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Faça login em sua conta</Text>
         
         {/* Campo Email */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>E-mail</Text>
+          <Text style={[styles.label, { color: colors.textPrimary }]}>E-mail</Text>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input, 
+              { 
+                backgroundColor: colors.gray50,
+                borderColor: colors.border,
+                color: colors.textPrimary
+              }
+            ]}
             placeholder="seu@email.com"
-            placeholderTextColor={COLORS.textDisabled}
+            placeholderTextColor={colors.textDisabled}
             keyboardType="email-address"
             autoCapitalize="none"
             autoCorrect={false}
@@ -94,11 +102,18 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
         
         {/* Campo Senha */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Senha</Text>
+          <Text style={[styles.label, { color: colors.textPrimary }]}>Senha</Text>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input, 
+              { 
+                backgroundColor: colors.gray50,
+                borderColor: colors.border,
+                color: colors.textPrimary
+              }
+            ]}
             placeholder="Digite sua senha"
-            placeholderTextColor={COLORS.textDisabled}
+            placeholderTextColor={colors.textDisabled}
             secureTextEntry
             value={senha}
             onChangeText={setSenha}
@@ -107,12 +122,26 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
         </View>
 
         {/* Indicadores de validação */}
-        <View style={styles.indicadores}>
-          <Text style={styles.indicadorTitulo}>Validação:</Text>
-          <Text style={validarEmail(email) ? styles.indicadorOk : styles.indicadorNok}>
+        <View style={[
+          styles.indicadores, 
+          { 
+            backgroundColor: colors.gray50,
+            borderLeftColor: colors.success
+          }
+        ]}>
+          <Text style={[styles.indicadorTitulo, { color: colors.textSecondary }]}>
+            Validação:
+          </Text>
+          <Text style={[
+            validarEmail(email) ? styles.indicadorOk : styles.indicadorNok,
+            { color: validarEmail(email) ? colors.success : colors.error }
+          ]}>
             {validarEmail(email) ? "✓ E-mail válido" : "✗ E-mail inválido"}
           </Text>
-          <Text style={senha.length >= 6 ? styles.indicadorOk : styles.indicadorNok}>
+          <Text style={[
+            senha.length >= 6 ? styles.indicadorOk : styles.indicadorNok,
+            { color: senha.length >= 6 ? colors.success : colors.error }
+          ]}>
             {senha.length >= 6 ? "✓ Senha OK (6+ caracteres)" : "✗ Senha muito curta"}
           </Text>
         </View>
@@ -121,36 +150,62 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
         <TouchableOpacity 
           style={[
             styles.botaoLogin, 
-            (!podeFazerLogin || carregando) && styles.botaoDesabilitado
+            { backgroundColor: colors.primary },
+            (!podeFazerLogin || carregando) && [
+              styles.botaoDesabilitado, 
+              { backgroundColor: colors.gray400 }
+            ]
           ]} 
           onPress={handleLogin}
           disabled={!podeFazerLogin || carregando}
         >
           {carregando ? (
-            <ActivityIndicator color={COLORS.textInverse} size="small" />
+            <ActivityIndicator color={colors.white} size="small" />
           ) : (
             <>
-              <FontAwesome5 name="sign-in-alt" size={16} color={COLORS.textInverse} />
-              <Text style={styles.textoBotao}>Entrar</Text>
+              <FontAwesome5 name="sign-in-alt" size={16} color={colors.white} />
+              <Text style={[styles.textoBotao, { color: colors.white }]}>Entrar</Text>
             </>
           )}
         </TouchableOpacity>
 
         {/* Separador */}
         <View style={styles.separador}>
-          <View style={styles.linha} />
-          <Text style={styles.textoSeparador}>ou</Text>
-          <View style={styles.linha} />
+          <View style={[styles.linha, { backgroundColor: colors.border }]} />
+          <Text style={[styles.textoSeparador, { color: colors.textDisabled }]}>ou</Text>
+          <View style={[styles.linha, { backgroundColor: colors.border }]} />
         </View>
         
         {/* Botão Cadastro */}
         <TouchableOpacity 
-          style={styles.botaoCadastro}
+          style={[styles.botaoCadastro, { backgroundColor: colors.primaryLight }]}
           onPress={handleCadastro}
           disabled={carregando}
         >
-          <FontAwesome5 name="user-plus" size={16} color={COLORS.textInverse} />
-          <Text style={styles.textoCadastro}>Criar Nova Conta</Text>
+          <FontAwesome5 name="user-plus" size={16} color={colors.white} />
+          <Text style={[styles.textoCadastro, { color: colors.white }]}>Criar Nova Conta</Text>
+        </TouchableOpacity>
+
+        {/* Acesso Rápido */}
+        <TouchableOpacity 
+          style={styles.acessoRapido}
+          onPress={handleAcessoSemLogin}
+          disabled={carregando}
+        >
+          <Text style={[styles.acessoRapidoText, { color: colors.primary }]}>
+            Acessar sem fazer login
+          </Text>
+        </TouchableOpacity>
+
+        {/* Esqueci Senha */}
+        <TouchableOpacity 
+          style={styles.esqueciSenha}
+          onPress={() => Alert.alert("Recuperar Senha", "Funcionalidade em desenvolvimento")}
+          disabled={carregando}
+        >
+          <Text style={[styles.esqueciSenhaText, { color: colors.textSecondary }]}>
+            Esqueci minha senha
+          </Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -161,15 +216,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    backgroundColor: COLORS.background,
     padding: 16,
   },
   box: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 32,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -177,13 +230,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: TYPOGRAPHY.fontSize['5xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     marginBottom: 8,
     textAlign: "center",
   },
   subtitle: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textSecondary,
     marginBottom: 30,
     textAlign: "center",
   },
@@ -193,47 +244,37 @@ const styles = StyleSheet.create({
   label: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginBottom: 8,
   },
   input: {
-    backgroundColor: COLORS.gray50,
     borderWidth: 1,
-    borderColor: COLORS.border,
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textPrimary,
   },
   indicadores: {
-    backgroundColor: COLORS.gray50,
     padding: 12,
     borderRadius: 6,
     marginBottom: 20,
     borderLeftWidth: 3,
-    borderLeftColor: COLORS.success,
   },
   indicadorTitulo: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginBottom: 6,
-    color: COLORS.textSecondary,
   },
   indicadorOk: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.success,
     marginBottom: 3,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   indicadorNok: {
     fontSize: TYPOGRAPHY.fontSize.xs,
-    color: COLORS.error,
     marginBottom: 3,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
   },
   botaoLogin: {
-    backgroundColor: COLORS.primary,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -241,16 +282,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   botaoDesabilitado: {
-    backgroundColor: COLORS.gray400,
+    // Cor definida inline
   },
   textoBotao: {
-    color: COLORS.textInverse,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginLeft: 8,
@@ -263,15 +303,12 @@ const styles = StyleSheet.create({
   linha: {
     flex: 1,
     height: 1,
-    backgroundColor: COLORS.border,
   },
   textoSeparador: {
     marginHorizontal: 15,
-    color: COLORS.textDisabled,
     fontSize: TYPOGRAPHY.fontSize.base,
   },
   botaoCadastro: {
-    backgroundColor: COLORS.primaryLight,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -279,13 +316,12 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   textoCadastro: {
-    color: COLORS.textInverse,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginLeft: 8,
@@ -296,7 +332,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   acessoRapidoText: {
-    color: COLORS.primary,
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     textDecorationLine: "underline",
@@ -306,7 +341,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   esqueciSenhaText: {
-    color: COLORS.textSecondary,
     fontSize: TYPOGRAPHY.fontSize.sm,
     textDecorationLine: "underline",
   },

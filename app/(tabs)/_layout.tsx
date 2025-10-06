@@ -2,16 +2,19 @@
 import { Tabs } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { Platform } from 'react-native';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 
 export default function TabLayout() {
+  const { colors } = useTheme(); // NOVO HOOK
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.surface,
           borderTopWidth: 1,
-          borderTopColor: '#E8F5E8',
+          borderTopColor: colors.borderLight,
           height: Platform.OS === 'ios' ? 90 : 70,
           paddingBottom: Platform.OS === 'ios' ? 30 : 10,
           paddingTop: 10,
@@ -21,8 +24,8 @@ export default function TabLayout() {
           shadowOpacity: 0.1,
           shadowRadius: 8,
         },
-        tabBarActiveTintColor: '#277C5C',
-        tabBarInactiveTintColor: '#999999',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textDisabled,
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: '600',

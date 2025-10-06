@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
+import { TYPOGRAPHY } from '@/constants/Fontes'; // NOVA IMPORT
 
 // Interfaces para tipagem
 interface FAQItem {
@@ -43,20 +45,24 @@ const ItemContato: React.FC<ItemContatoProps> = ({
   subtitle, 
   onPress, 
   color = "#277C5C" 
-}) => (
-  <TouchableOpacity style={styles.contatoItem} onPress={onPress}>
-    <View style={styles.contatoLeft}>
-      <View style={[styles.contatoIcon, { backgroundColor: `${color}20` }]}>
-        <FontAwesome5 name={icon} size={20} color={color} />
+}) => {
+  const { colors } = useTheme();
+  
+  return (
+    <TouchableOpacity style={[styles.contatoItem, { backgroundColor: colors.gray50 }]} onPress={onPress}>
+      <View style={styles.contatoLeft}>
+        <View style={[styles.contatoIcon, { backgroundColor: `${color}20` }]}>
+          <FontAwesome5 name={icon} size={20} color={color} />
+        </View>
+        <View style={styles.contatoText}>
+          <Text style={[styles.contatoTitle, { color: colors.textPrimary }]}>{title}</Text>
+          <Text style={[styles.contatoSubtitle, { color: colors.textSecondary }]}>{subtitle}</Text>
+        </View>
       </View>
-      <View style={styles.contatoText}>
-        <Text style={styles.contatoTitle}>{title}</Text>
-        <Text style={styles.contatoSubtitle}>{subtitle}</Text>
-      </View>
-    </View>
-    <FontAwesome5 name="chevron-right" size={14} color="#999" />
-  </TouchableOpacity>
-);
+      <FontAwesome5 name="chevron-right" size={14} color={colors.textDisabled} />
+    </TouchableOpacity>
+  );
+};
 
 // Componente ItemAjuda com tipagem correta
 const ItemAjuda: React.FC<ItemAjudaProps> = ({ 
@@ -64,17 +70,22 @@ const ItemAjuda: React.FC<ItemAjudaProps> = ({
   title, 
   onPress, 
   color = "#277C5C" 
-}) => (
-  <TouchableOpacity style={styles.ajudaItem} onPress={onPress}>
-    <View style={[styles.ajudaIcon, { backgroundColor: `${color}20` }]}>
-      <FontAwesome5 name={icon} size={18} color={color} />
-    </View>
-    <Text style={styles.ajudaTitle}>{title}</Text>
-  </TouchableOpacity>
-);
+}) => {
+  const { colors } = useTheme();
+  
+  return (
+    <TouchableOpacity style={[styles.ajudaItem, { backgroundColor: colors.gray50 }]} onPress={onPress}>
+      <View style={[styles.ajudaIcon, { backgroundColor: `${color}20` }]}>
+        <FontAwesome5 name={icon} size={18} color={color} />
+      </View>
+      <Text style={[styles.ajudaTitle, { color: colors.textPrimary }]}>{title}</Text>
+    </TouchableOpacity>
+  );
+};
 
 export default function Suporte() {
   const router = useRouter();
+  const { colors } = useTheme(); // NOVO HOOK
   const [faqAberto, setFaqAberto] = useState<string | null>(null);
 
   // Dados das perguntas frequentes
@@ -158,38 +169,41 @@ export default function Suporte() {
     });
   };
 
-    const handleVoltar = () => {
+  const handleVoltar = () => {
     router.back();
   };
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.box}>
+        <View style={[styles.box, { backgroundColor: colors.surface }]}>
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.backButton} onPress={handleVoltar}>
-              <FontAwesome5 name="arrow-left" size={20} color="#277C5C" />
+            <TouchableOpacity 
+              style={[styles.backButton, { borderColor: colors.border }]} 
+              onPress={handleVoltar}
+            >
+              <FontAwesome5 name="arrow-left" size={20} color={colors.primary} />
             </TouchableOpacity>
-            <Text style={styles.title}>Ajuda & Suporte</Text>
+            <Text style={[styles.title, { color: colors.primary }]}>Ajuda & Suporte</Text>
             <View style={styles.headerSpacer} />
           </View>
 
-          <Text style={styles.subtitle}>Estamos aqui para ajudar você!</Text>
+          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>Estamos aqui para ajudar você!</Text>
 
           {/* Canais de Contato */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Canais de Contato</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Canais de Contato</Text>
             
             <ItemContato
               icon="phone-alt"
               title="Telefone"
               subtitle="(11) 99999-9999"
               onPress={fazerLigacao}
-              color="#2196F3"
+              color={colors.info}
             />
             
             <ItemContato
@@ -197,7 +211,7 @@ export default function Suporte() {
               title="E-mail"
               subtitle="suporte@greensync.com"
               onPress={enviarEmail}
-              color="#FF9800"
+              color={colors.warning}
             />
             
             <ItemContato
@@ -211,7 +225,7 @@ export default function Suporte() {
 
           {/* Recursos de Ajuda */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Recursos de Ajuda</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Recursos de Ajuda</Text>
             
             <View style={styles.ajudaGrid}>
               <ItemAjuda
@@ -225,21 +239,21 @@ export default function Suporte() {
                 icon="video"
                 title="Tutoriais em Vídeo"
                 onPress={verTutoriais}
-                color="#F44336"
+                color={colors.error}
               />
             </View>
           </View>
 
           {/* Feedback */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Feedback</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Feedback</Text>
             
             <ItemContato
               icon="bug"
               title="Reportar Problema"
               subtitle="Encontrou um bug? Nos avise!"
               onPress={reportarProblema}
-              color="#F44336"
+              color={colors.error}
             />
             
             <ItemContato
@@ -247,31 +261,31 @@ export default function Suporte() {
               title="Sugerir Melhoria"
               subtitle="Tem uma ideia para melhorar o app?"
               onPress={sugerirMelhoria}
-              color="#FFC107"
+              color={colors.warning}
             />
           </View>
 
           {/* Perguntas Frequentes */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Perguntas Frequentes (FAQ)</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Perguntas Frequentes (FAQ)</Text>
             
             {faqs.map((faq) => (
-              <View key={faq.id} style={styles.faqItem}>
+              <View key={faq.id} style={[styles.faqItem, { backgroundColor: colors.gray50 }]}>
                 <TouchableOpacity 
                   style={styles.faqPergunta}
                   onPress={() => toggleFaq(faq.id)}
                 >
-                  <Text style={styles.faqPerguntaText}>{faq.pergunta}</Text>
+                  <Text style={[styles.faqPerguntaText, { color: colors.textPrimary }]}>{faq.pergunta}</Text>
                   <FontAwesome5 
                     name={faq.aberto ? "chevron-up" : "chevron-down"} 
                     size={14} 
-                    color="#666" 
+                    color={colors.textSecondary} 
                   />
                 </TouchableOpacity>
                 
                 {faq.aberto && (
-                  <View style={styles.faqResposta}>
-                    <Text style={styles.faqRespostaText}>{faq.resposta}</Text>
+                  <View style={[styles.faqResposta, { borderTopColor: colors.borderLight }]}>
+                    <Text style={[styles.faqRespostaText, { color: colors.textSecondary }]}>{faq.resposta}</Text>
                   </View>
                 )}
               </View>
@@ -279,29 +293,29 @@ export default function Suporte() {
           </View>
 
           {/* Informações de Horário */}
-          <View style={styles.infoBox}>
-            <FontAwesome5 name="clock" size={20} color="#277C5C" />
+          <View style={[styles.infoBox, { backgroundColor: colors.greenLight }]}>
+            <FontAwesome5 name="clock" size={20} color={colors.primary} />
             <View style={styles.infoContent}>
-              <Text style={styles.infoTitle}>Horário de Atendimento</Text>
-              <Text style={styles.infoText}>Segunda a Sexta: 8h às 18h</Text>
-              <Text style={styles.infoText}>Sábados: 9h às 13h</Text>
+              <Text style={[styles.infoTitle, { color: colors.primary }]}>Horário de Atendimento</Text>
+              <Text style={[styles.infoText, { color: colors.textSecondary }]}>Segunda a Sexta: 8h às 18h</Text>
+              <Text style={[styles.infoText, { color: colors.textSecondary }]}>Sábados: 9h às 13h</Text>
             </View>
           </View>
 
           {/* Tempo de Resposta */}
-          <View style={styles.infoBox}>
-            <FontAwesome5 name="stopwatch" size={20} color="#277C5C" />
+          <View style={[styles.infoBox, { backgroundColor: colors.greenLight }]}>
+            <FontAwesome5 name="stopwatch" size={20} color={colors.primary} />
             <View style={styles.infoContent}>
-              <Text style={styles.infoTitle}>Tempo de Resposta</Text>
-              <Text style={styles.infoText}>E-mail: até 24 horas</Text>
-              <Text style={styles.infoText}>WhatsApp: até 2 horas</Text>
+              <Text style={[styles.infoTitle, { color: colors.primary }]}>Tempo de Resposta</Text>
+              <Text style={[styles.infoText, { color: colors.textSecondary }]}>E-mail: até 24 horas</Text>
+              <Text style={[styles.infoText, { color: colors.textSecondary }]}>WhatsApp: até 2 horas</Text>
             </View>
           </View>
 
           {/* Informações do Suporte */}
-          <View style={styles.appInfo}>
-            <Text style={styles.appVersion}>GreenSync Suporte v1.0.0</Text>
-            <Text style={styles.appCopyright}>© 2024 GreenSync. Todos os direitos reservados.</Text>
+          <View style={[styles.appInfo, { borderTopColor: colors.borderLight }]}>
+            <Text style={[styles.appVersion, { color: colors.textSecondary }]}>GreenSync Suporte v1.0.0</Text>
+            <Text style={[styles.appCopyright, { color: colors.textDisabled }]}>© 2024 GreenSync. Todos os direitos reservados.</Text>
           </View>
         </View>
       </ScrollView>
@@ -312,18 +326,16 @@ export default function Suporte() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
   },
   scrollContent: {
     flexGrow: 1,
     padding: 16,
   },
   box: {
-    backgroundColor: "#FFF",
     borderRadius: 12,
     padding: 24,
     elevation: 4,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -338,12 +350,10 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
   },
   title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#277C5C",
+    fontSize: TYPOGRAPHY.fontSize['3xl'],
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
     textAlign: "center",
     flex: 1,
   },
@@ -351,8 +361,7 @@ const styles = StyleSheet.create({
     width: 40,
   },
   subtitle: {
-    fontSize: 16,
-    color: "#666",
+    fontSize: TYPOGRAPHY.fontSize.lg,
     textAlign: "center",
     marginBottom: 30,
   },
@@ -360,9 +369,8 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: TYPOGRAPHY.fontSize.xl,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginBottom: 16,
     marginLeft: 8,
   },
@@ -370,7 +378,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    backgroundColor: "#F8F9FA",
     borderRadius: 8,
     padding: 16,
     marginBottom: 8,
@@ -392,14 +399,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contatoTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
+    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginBottom: 2,
   },
   contatoSubtitle: {
-    fontSize: 12,
-    color: "#666",
+    fontSize: TYPOGRAPHY.fontSize.sm,
   },
   ajudaGrid: {
     flexDirection: "row",
@@ -408,7 +413,6 @@ const styles = StyleSheet.create({
   },
   ajudaItem: {
     flex: 1,
-    backgroundColor: "#F8F9FA",
     borderRadius: 8,
     padding: 16,
     alignItems: "center",
@@ -422,13 +426,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   ajudaTitle: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#333",
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
     textAlign: "center",
   },
   faqItem: {
-    backgroundColor: "#F8F9FA",
     borderRadius: 8,
     marginBottom: 8,
     overflow: "hidden",
@@ -441,26 +443,22 @@ const styles = StyleSheet.create({
   },
   faqPerguntaText: {
     flex: 1,
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
+    fontSize: TYPOGRAPHY.fontSize.base,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginRight: 12,
   },
   faqResposta: {
     padding: 16,
     paddingTop: 0,
     borderTopWidth: 1,
-    borderTopColor: "#E0E0E0",
   },
   faqRespostaText: {
-    fontSize: 13,
-    color: "#666",
-    lineHeight: 18,
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    lineHeight: TYPOGRAPHY.lineHeight.relaxed * TYPOGRAPHY.fontSize.sm,
   },
   infoBox: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#E8F5E8",
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
@@ -470,30 +468,25 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   infoTitle: {
-    fontSize: 14,
-    fontWeight: "bold",
-    color: "#277C5C",
+    fontSize: TYPOGRAPHY.fontSize.base,
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
     marginBottom: 4,
   },
   infoText: {
-    fontSize: 12,
-    color: "#666",
+    fontSize: TYPOGRAPHY.fontSize.sm,
   },
   appInfo: {
     alignItems: "center",
     marginTop: 20,
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: "#F0F0E0",
   },
   appVersion: {
-    fontSize: 12,
-    color: "#666",
+    fontSize: TYPOGRAPHY.fontSize.sm,
     marginBottom: 4,
   },
   appCopyright: {
-    fontSize: 10,
-    color: "#999",
+    fontSize: TYPOGRAPHY.fontSize.xs,
     textAlign: "center",
   },
 });

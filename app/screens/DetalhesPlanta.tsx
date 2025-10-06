@@ -12,19 +12,21 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
+import { useTheme } from '@/context/ThemeContext';
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 export default function DetalhesPlanta() {
   const params = useLocalSearchParams(); 
   const router = useRouter();
-  const { colors } = useTheme(); // NOVO HOOK
+  const { colors } = useTheme();
 
-  // Captura o parâmetro "id"
-  const id = params.id;
+  // CORREÇÃO: Garantir que o id seja uma string
+  const { id } = params;
+  const plantaId = Array.isArray(id) ? id[0] : id;
 
+  // CORREÇÃO: Passar o id como parâmetro
   const handleEditar = () => {
-    router.push('/screens/EditarPlanta');
+    router.push(`/screens/EditarPlanta?id=${plantaId}`);
   };
 
   // Dados das plantas - depois pode vir do Firebase
@@ -67,7 +69,8 @@ export default function DetalhesPlanta() {
     },
   ];
 
-  const planta = plantas.find(p => p.id === id);
+  // CORREÇÃO: Usar plantaId em vez de id
+  const planta = plantas.find(p => p.id === plantaId);
 
   if (!planta) {
     return (
@@ -217,6 +220,7 @@ export default function DetalhesPlanta() {
   );
 }
 
+// ... (os styles permanecem os mesmos)
 const styles = StyleSheet.create({
   container: {
     flex: 1,

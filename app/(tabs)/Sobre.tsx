@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { COLORS } from '@/constants/Cores';
+import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 // Interface para o componente de recurso
@@ -28,18 +28,22 @@ const Recurso: React.FC<RecursoProps> = ({
   icon, 
   title, 
   description, 
-  color = COLORS.primary
-}) => (
-  <View style={styles.recursoItem}>
-    <View style={[styles.recursoIcon, { backgroundColor: `${color}20` }]}>
-      <FontAwesome5 name={icon} size={24} color={color} />
+  color = "#277C5C" // Cor padrão atualizada
+}) => {
+  const { colors } = useTheme();
+  
+  return (
+    <View style={[styles.recursoItem, { backgroundColor: colors.gray50 }]}>
+      <View style={[styles.recursoIcon, { backgroundColor: `${color}20` }]}>
+        <FontAwesome5 name={icon} size={24} color={color} />
+      </View>
+      <View style={styles.recursoContent}>
+        <Text style={[styles.recursoTitle, { color: colors.textPrimary }]}>{title}</Text>
+        <Text style={[styles.recursoDescription, { color: colors.textSecondary }]}>{description}</Text>
+      </View>
     </View>
-    <View style={styles.recursoContent}>
-      <Text style={styles.recursoTitle}>{title}</Text>
-      <Text style={styles.recursoDescription}>{description}</Text>
-    </View>
-  </View>
-);
+  );
+};
 
 // Interface para o componente de equipe
 interface MembroEquipeProps {
@@ -54,21 +58,26 @@ const MembroEquipe: React.FC<MembroEquipeProps> = ({
   nome, 
   cargo, 
   avatar, 
-  color = COLORS.primary
-}) => (
-  <View style={styles.membroItem}>
-    <View style={[styles.membroAvatar, { backgroundColor: `${color}20` }]}>
-      <FontAwesome5 name={avatar} size={28} color={color} />
+  color = "#277C5C" // Cor padrão atualizada
+}) => {
+  const { colors } = useTheme();
+  
+  return (
+    <View style={[styles.membroItem, { backgroundColor: colors.gray50 }]}>
+      <View style={[styles.membroAvatar, { backgroundColor: `${color}20` }]}>
+        <FontAwesome5 name={avatar} size={28} color={color} />
+      </View>
+      <View style={styles.membroInfo}>
+        <Text style={[styles.membroNome, { color: colors.textPrimary }]}>{nome}</Text>
+        <Text style={[styles.membroCargo, { color: colors.textSecondary }]}>{cargo}</Text>
+      </View>
     </View>
-    <View style={styles.membroInfo}>
-      <Text style={styles.membroNome}>{nome}</Text>
-      <Text style={styles.membroCargo}>{cargo}</Text>
-    </View>
-  </View>
-);
+  );
+};
 
 export default function Sobre() {
   const router = useRouter();
+  const { colors } = useTheme(); // NOVO HOOK
 
   const abrirWebsite = () => {
     Linking.openURL('https://greensync-estufa.vercel.app').catch(() => {
@@ -116,25 +125,25 @@ export default function Sobre() {
       icon: "seedling",
       title: "Gestão de Plantas",
       description: "Cadastre, monitore e gerencie todas as suas plantas em um só lugar",
-      color: COLORS.primary
+      color: colors.primary
     },
     {
       icon: "warehouse",
       title: "Controle de Estufas",
       description: "Acompanhe as condições das suas estufas e otimize o cultivo",
-      color: COLORS.info
+      color: colors.info
     },
     {
       icon: "chart-line",
       title: "Dashboard Inteligente",
       description: "Visualize métricas e insights sobre seu cultivo",
-      color: COLORS.warning
+      color: colors.warning
     },
     {
       icon: "bell",
       title: "Alertas Automáticos",
       description: "Receba notificações sobre condições importantes",
-      color: COLORS.error
+      color: colors.error
     }
   ];
 
@@ -164,25 +173,25 @@ export default function Sobre() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.container}
+      style={[styles.container, { backgroundColor: colors.background }]}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.box}>
+        <View style={[styles.box, { backgroundColor: colors.surface }]}>
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.title}>Sobre o GreenSync</Text>
+            <Text style={[styles.title, { color: colors.primary }]}>Sobre o GreenSync</Text>
             <View style={styles.headerSpacer} />
           </View>
 
           {/* Logo e Descrição */}
           <View style={styles.logoSection}>
-            <View style={styles.logoContainer}>
-              <FontAwesome5 name="leaf" size={50} color={COLORS.primary} />
+            <View style={[styles.logoContainer, { backgroundColor: colors.greenLight }]}>
+              <FontAwesome5 name="leaf" size={50} color={colors.primary} />
             </View>
-            <Text style={styles.appName}>GreenSync</Text>
-            <Text style={styles.appSlogan}>Sincronizando sua paixão por plantas</Text>
-            <Text style={styles.appDescription}>
+            <Text style={[styles.appName, { color: colors.primary }]}>GreenSync</Text>
+            <Text style={[styles.appSlogan, { color: colors.textSecondary }]}>Sincronizando sua paixão por plantas</Text>
+            <Text style={[styles.appDescription, { color: colors.textSecondary }]}>
               O GreenSync é um aplicativo inovador desenvolvido para entusiastas da agricultura urbana 
               e cultivadores domésticos. Nossa missão é simplificar o gerenciamento de plantas e estufas, 
               proporcionando uma experiência intuitiva e completa.
@@ -190,24 +199,24 @@ export default function Sobre() {
           </View>
 
           {/* Versão e Informações */}
-          <View style={styles.infoSection}>
+          <View style={[styles.infoSection, { backgroundColor: colors.gray50 }]}>
             <View style={styles.infoItem}>
-              <FontAwesome5 name="code-branch" size={16} color={COLORS.primary} />
-              <Text style={styles.infoText}>Versão 1.0.0</Text>
+              <FontAwesome5 name="code-branch" size={16} color={colors.primary} />
+              <Text style={[styles.infoText, { color: colors.textPrimary }]}>Versão 1.0.0</Text>
             </View>
             <View style={styles.infoItem}>
-              <FontAwesome5 name="calendar" size={16} color={COLORS.primary} />
-              <Text style={styles.infoText}>Lançamento: Novembro 2025</Text>
+              <FontAwesome5 name="calendar" size={16} color={colors.primary} />
+              <Text style={[styles.infoText, { color: colors.textPrimary }]}>Lançamento: Novembro 2025</Text>
             </View>
             <View style={styles.infoItem}>
-              <FontAwesome5 name="mobile-alt" size={16} color={COLORS.primary} />
-              <Text style={styles.infoText}>Compatível: iOS e Android</Text>
+              <FontAwesome5 name="mobile-alt" size={16} color={colors.primary} />
+              <Text style={[styles.infoText, { color: colors.textPrimary }]}>Compatível: iOS e Android</Text>
             </View>
           </View>
 
           {/* Recursos Principais */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Recursos Principais</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Recursos Principais</Text>
             {recursos.map((recurso, index) => (
               <Recurso
                 key={index}
@@ -221,8 +230,8 @@ export default function Sobre() {
 
           {/* Nossa Equipe */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Nossa Equipe</Text>
-            <Text style={styles.sectionSubtitle}>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Nossa Equipe</Text>
+            <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
               Conheça o time por trás do GreenSync
             </Text>
             <View style={styles.equipeGrid}>
@@ -239,80 +248,101 @@ export default function Sobre() {
 
           {/* Tecnologias */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Tecnologias Utilizadas</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Tecnologias Utilizadas</Text>
             <View style={styles.techList}>
-              <View style={styles.techItem}>
+              <View style={[styles.techItem, { backgroundColor: colors.gray50 }]}>
                 <FontAwesome5 name="react" size={20} color="#61DAFB" />
-                <Text style={styles.techText}>React Native</Text>
+                <Text style={[styles.techText, { color: colors.textPrimary }]}>React Native</Text>
               </View>
-              <View style={styles.techItem}>
+              <View style={[styles.techItem, { backgroundColor: colors.gray50 }]}>
                 <FontAwesome5 name="js-square" size={20} color="#F7DF1E" />
-                <Text style={styles.techText}>TypeScript</Text>
+                <Text style={[styles.techText, { color: colors.textPrimary }]}>TypeScript</Text>
               </View>
-              <View style={styles.techItem}>
+              <View style={[styles.techItem, { backgroundColor: colors.gray50 }]}>
                 <FontAwesome5 name="fire" size={20} color="#FFA611" />
-                <Text style={styles.techText}>Firebase</Text>
+                <Text style={[styles.techText, { color: colors.textPrimary }]}>Firebase</Text>
               </View>
-              <View style={styles.techItem}>
-                <FontAwesome5 name="github" size={20} color={COLORS.gray800} />
-                <Text style={styles.techText}>GitHub</Text>
+              <View style={[styles.techItem, { backgroundColor: colors.gray50 }]}>
+                <FontAwesome5 name="github" size={20} color={colors.gray800} />
+                <Text style={[styles.techText, { color: colors.textPrimary }]}>GitHub</Text>
               </View>
             </View>
           </View>
 
           {/* Redes Sociais */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Conecte-se Conosco</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Conecte-se Conosco</Text>
             <View style={styles.redesSociais}>
-              <TouchableOpacity style={styles.redeSocialButton} onPress={abrirWebsite}>
-                <FontAwesome5 name="globe" size={20} color={COLORS.primary} />
-                <Text style={styles.redeSocialText}>Website</Text>
+              <TouchableOpacity 
+                style={[styles.redeSocialButton, { backgroundColor: colors.gray50 }]} 
+                onPress={abrirWebsite}
+              >
+                <FontAwesome5 name="globe" size={20} color={colors.primary} />
+                <Text style={[styles.redeSocialText, { color: colors.textPrimary }]}>Website</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.redeSocialButton} onPress={abrirLinkedIn}>
+              <TouchableOpacity 
+                style={[styles.redeSocialButton, { backgroundColor: colors.gray50 }]} 
+                onPress={abrirLinkedIn}
+              >
                 <FontAwesome5 name="linkedin" size={20} color="#0077B5" />
-                <Text style={styles.redeSocialText}>LinkedIn</Text>
+                <Text style={[styles.redeSocialText, { color: colors.textPrimary }]}>LinkedIn</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.redeSocialButton} onPress={abrirInstagram}>
+              <TouchableOpacity 
+                style={[styles.redeSocialButton, { backgroundColor: colors.gray50 }]} 
+                onPress={abrirInstagram}
+              >
                 <FontAwesome5 name="instagram" size={20} color="#E4405F" />
-                <Text style={styles.redeSocialText}>Instagram</Text>
+                <Text style={[styles.redeSocialText, { color: colors.textPrimary }]}>Instagram</Text>
               </TouchableOpacity>
             </View>
           </View>
 
           {/* Ações */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Ações</Text>
-            <TouchableOpacity style={styles.actionButton} onPress={enviarFeedback}>
-              <FontAwesome5 name="comment-alt" size={18} color={COLORS.white} />
-              <Text style={styles.actionButtonText}>Enviar Feedback</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Ações</Text>
+            <TouchableOpacity 
+              style={[styles.actionButton, { backgroundColor: colors.primary }]} 
+              onPress={enviarFeedback}
+            >
+              <FontAwesome5 name="comment-alt" size={18} color={colors.white} />
+              <Text style={[styles.actionButtonText, { color: colors.white }]}>Enviar Feedback</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.actionButton} onPress={avaliarApp}>
-              <FontAwesome5 name="star" size={18} color={COLORS.white} />
-              <Text style={styles.actionButtonText}>Avaliar App</Text>
+            <TouchableOpacity 
+              style={[styles.actionButton, { backgroundColor: colors.primary }]} 
+              onPress={avaliarApp}
+            >
+              <FontAwesome5 name="star" size={18} color={colors.white} />
+              <Text style={[styles.actionButtonText, { color: colors.white }]}>Avaliar App</Text>
             </TouchableOpacity>
           </View>
 
           {/* Legal */}
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Informações Legais</Text>
-            <TouchableOpacity style={styles.legalButton} onPress={verTermosUso}>
-              <Text style={styles.legalButtonText}>Termos de Uso</Text>
+            <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Informações Legais</Text>
+            <TouchableOpacity 
+              style={[styles.legalButton, { backgroundColor: colors.gray50 }]} 
+              onPress={verTermosUso}
+            >
+              <Text style={[styles.legalButtonText, { color: colors.primary }]}>Termos de Uso</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.legalButton} onPress={verPolíticaPrivacidade}>
-              <Text style={styles.legalButtonText}>Política de Privacidade</Text>
+            <TouchableOpacity 
+              style={[styles.legalButton, { backgroundColor: colors.gray50 }]} 
+              onPress={verPolíticaPrivacidade}
+            >
+              <Text style={[styles.legalButtonText, { color: colors.primary }]}>Política de Privacidade</Text>
             </TouchableOpacity>
           </View>
 
           {/* Rodapé */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
+          <View style={[styles.footer, { borderTopColor: colors.borderLight }]}>
+            <Text style={[styles.footerText, { color: colors.textSecondary }]}>
               Desenvolvido com ❤️ para a comunidade de cultivadores
             </Text>
-            <Text style={styles.copyright}>
+            <Text style={[styles.copyright, { color: colors.textDisabled }]}>
               © 2025 GreenSync. Todos os direitos reservados.
             </Text>
           </View>
@@ -325,18 +355,16 @@ export default function Sobre() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
   },
   scrollContent: {
     flexGrow: 1,
     padding: 16,
   },
   box: {
-    backgroundColor: COLORS.surface,
     borderRadius: 12,
     padding: 24,
     elevation: 4,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -351,12 +379,10 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
   },
   title: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     textAlign: "center",
     flex: 1,
   },
@@ -371,12 +397,11 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: COLORS.greenLight,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 16,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
@@ -384,23 +409,19 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: TYPOGRAPHY.fontSize['4xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.primary,
     marginBottom: 8,
   },
   appSlogan: {
     fontSize: TYPOGRAPHY.fontSize.lg,
-    color: COLORS.textSecondary,
     marginBottom: 16,
     textAlign: "center",
   },
   appDescription: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textSecondary,
     textAlign: "center",
     lineHeight: TYPOGRAPHY.lineHeight.normal * TYPOGRAPHY.fontSize.base,
   },
   infoSection: {
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
     marginBottom: 30,
@@ -412,7 +433,6 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textPrimary,
     marginLeft: 12,
   },
   section: {
@@ -421,18 +441,15 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: TYPOGRAPHY.fontSize['2xl'],
     fontWeight: TYPOGRAPHY.fontWeight.bold,
-    color: COLORS.textPrimary,
     marginBottom: 16,
   },
   sectionSubtitle: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textSecondary,
     marginBottom: 16,
   },
   recursoItem: {
     flexDirection: "row",
     alignItems: "flex-start",
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
@@ -451,12 +468,10 @@ const styles = StyleSheet.create({
   recursoTitle: {
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginBottom: 4,
   },
   recursoDescription: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
     lineHeight: TYPOGRAPHY.lineHeight.normal * TYPOGRAPHY.fontSize.sm,
   },
   equipeGrid: {
@@ -467,7 +482,6 @@ const styles = StyleSheet.create({
   membroItem: {
     width: "48%",
     alignItems: "center",
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
     marginBottom: 12,
@@ -486,13 +500,11 @@ const styles = StyleSheet.create({
   membroNome: {
     fontSize: TYPOGRAPHY.fontSize.base,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginBottom: 2,
     textAlign: "center",
   },
   membroCargo: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textSecondary,
     textAlign: "center",
   },
   techList: {
@@ -504,7 +516,6 @@ const styles = StyleSheet.create({
     width: "48%",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 12,
     marginBottom: 8,
@@ -512,7 +523,6 @@ const styles = StyleSheet.create({
   techText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginLeft: 8,
   },
   redesSociais: {
@@ -522,7 +532,6 @@ const styles = StyleSheet.create({
   redeSocialButton: {
     flex: 1,
     alignItems: "center",
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 16,
     marginHorizontal: 4,
@@ -530,38 +539,33 @@ const styles = StyleSheet.create({
   redeSocialText: {
     fontSize: TYPOGRAPHY.fontSize.sm,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
-    color: COLORS.textPrimary,
     marginTop: 8,
   },
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: COLORS.primary,
     borderRadius: 8,
     padding: 16,
     marginBottom: 8,
     elevation: 2,
-    shadowColor: COLORS.black,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
   },
   actionButtonText: {
-    color: COLORS.white,
     fontSize: TYPOGRAPHY.fontSize.lg,
     fontWeight: TYPOGRAPHY.fontWeight.semibold,
     marginLeft: 8,
   },
   legalButton: {
-    backgroundColor: COLORS.gray50,
     borderRadius: 8,
     padding: 12,
     marginBottom: 8,
   },
   legalButtonText: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.primary,
     fontWeight: TYPOGRAPHY.fontWeight.medium,
     textAlign: "center",
   },
@@ -570,17 +574,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
     paddingTop: 20,
     borderTopWidth: 1,
-    borderTopColor: COLORS.borderLight,
   },
   footerText: {
     fontSize: TYPOGRAPHY.fontSize.base,
-    color: COLORS.textSecondary,
     textAlign: "center",
     marginBottom: 8,
   },
   copyright: {
     fontSize: TYPOGRAPHY.fontSize.sm,
-    color: COLORS.textDisabled,
     textAlign: "center",
   },
 });
