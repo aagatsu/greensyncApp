@@ -45,7 +45,53 @@ interface Alerta {
   lido: boolean;
 }
 
-// Dados para diferentes períodos - AGORA COM TIPAGEM CORRETA
+// COMPONENTE ALERTA CARD DEFINIDO PRIMEIRO
+const AlertaCard: React.FC<{ alerta: Alerta; onPress: () => void }> = ({ alerta, onPress }) => {
+  const getAlertaColor = (tipo: string) => {
+    switch (tipo) {
+      case 'urgente': return COLORS.error;
+      case 'aviso': return COLORS.warning;
+      case 'info': return COLORS.info;
+      default: return COLORS.textSecondary;
+    }
+  };
+
+  const getAlertaIcon = (tipo: string) => {
+    switch (tipo) {
+      case 'urgente': return 'exclamation-triangle';
+      case 'aviso': return 'exclamation-circle';
+      case 'info': return 'info-circle';
+      default: return 'info-circle';
+    }
+  };
+
+  return (
+    <TouchableOpacity 
+      style={[
+        styles.alertaCard,
+        !alerta.lido && styles.alertaNaoLido
+      ]}
+      onPress={onPress}
+    >
+      <View style={styles.alertaHeader}>
+        <View style={styles.alertaIcon}>
+          <FontAwesome5 
+            name={getAlertaIcon(alerta.tipo)} 
+            size={16} 
+            color={getAlertaColor(alerta.tipo)} 
+          />
+        </View>
+        <View style={styles.alertaContent}>
+          <Text style={styles.alertaMensagem}>{alerta.mensagem}</Text>
+          <Text style={styles.alertaTempo}>{alerta.tempo}</Text>
+        </View>
+        {!alerta.lido && <View style={[styles.alertaDot, { backgroundColor: getAlertaColor(alerta.tipo) }]} />}
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+// Dados para diferentes períodos
 const dadosPorPeriodo: Record<'hoje' | 'semana' | 'mes', {
   metricas: MetricCard[];
   plantasStatus: PlantaStatus[];
@@ -283,6 +329,11 @@ export default function Dashboard() {
   const [plantasStatus, setPlantasStatus] = useState<PlantaStatus[]>([]);
   const [dicaAtual, setDicaAtual] = useState("");
 
+  const handleVoltar = () => {
+    router.back();
+  };
+
+
   // Alertas (mantidos fixos pois são em tempo real)
   const [alertas, setAlertas] = useState<Alerta[]>([
     {
@@ -335,7 +386,6 @@ export default function Dashboard() {
     carregarDadosPeriodo(novoPeriodo);
   };
 
-  // CORREÇÃO: Atualizar o tipo do parâmetro para SaudeTipo
   const getSaudeColor = (saude: SaudeTipo) => {
     switch (saude) {
       case 'excelente': return COLORS.success;
@@ -343,24 +393,6 @@ export default function Dashboard() {
       case 'atenção': return COLORS.warning;
       case 'critica': return COLORS.error;
       default: return COLORS.textSecondary;
-    }
-  };
-
-  const getAlertaColor = (tipo: string) => {
-    switch (tipo) {
-      case 'urgente': return COLORS.error;
-      case 'aviso': return COLORS.warning;
-      case 'info': return COLORS.info;
-      default: return COLORS.textSecondary;
-    }
-  };
-
-  const getAlertaIcon = (tipo: string) => {
-    switch (tipo) {
-      case 'urgente': return 'exclamation-triangle';
-      case 'aviso': return 'exclamation-circle';
-      case 'info': return 'info-circle';
-      default: return 'info-circle';
     }
   };
 
@@ -448,6 +480,9 @@ export default function Dashboard() {
           {/* Header */}
           <View style={styles.header}>
             <View>
+                <TouchableOpacity style={styles.backButton} onPress={handleVoltar}>
+                <FontAwesome5 name="arrow-left" size={20} color="#277C5C" />
+                </TouchableOpacity>
               <Text style={styles.title}>Dashboard</Text>
               <Text style={styles.subtitle}>Visão geral do seu cultivo</Text>
             </View>
@@ -517,7 +552,11 @@ export default function Dashboard() {
             </View>
             <View style={styles.alertasContainer}>
               {alertas.map((alerta) => (
-                <AlertaCard key={alerta.id} alerta={alerta} />
+                <AlertaCard 
+                  key={alerta.id} 
+                  alerta={alerta} 
+                  onPress={() => marcarAlertaComoLido(alerta.id)}
+                />
               ))}
             </View>
           </View>
@@ -576,6 +615,7 @@ export default function Dashboard() {
   );
 }
 
+// ... (seus estilos permanecem os mesmos)
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -600,6 +640,13 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 20,
+  },
+      backButton: {
+    padding: 8,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#E0E0E0",
+    width: 40,
   },
   title: {
     fontSize: TYPOGRAPHY.fontSize['3xl'],
