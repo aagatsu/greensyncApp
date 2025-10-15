@@ -1,90 +1,93 @@
-// contexts/ThemeContext.tsx
+// context/ThemeContext.tsx
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { COLORS } from '@/constants/Cores';
-
-// Definir as cores para tema escuro
-export const DARK_COLORS = {
-  // Cores primárias (mantêm as mesmas)
-  primary: '#277C5C',
-  primaryDark: '#1E5F47',
-  primaryLight: '#34A853',
-  
-  // Cores secundárias (mantêm as mesmas)
-  secondary: '#D4A93A',
-  secondaryDark: '#B38F2A',
-  secondaryLight: '#FFD700',
-  
-  // Cores de fundo (invertidas)
-  background: '#121212',
-  surface: '#1E1E1E',
-  paper: '#2D2D2D',
-  
-  // Cores de texto (invertidas)
-  textPrimary: '#FFFFFF',
-  textSecondary: '#B0B0B0',
-  textDisabled: '#666666',
-  textInverse: '#000000',
-  
-  // Cores de estado (mantêm as mesmas)
-  success: '#4CAF50',
-  warning: '#FF9800',
-  error: '#F44336',
-  info: '#2196F3',
-  
-  // Cores de borda
-  border: '#333333',
-  borderLight: '#444444',
-  borderDark: '#222222',
-  
-  // Cores específicas do GreenSync (ajustadas)
-  greenLight: '#1A3326',
-  greenMuted: '#2D4A3A',
-  goldLight: '#332E1A',
-  
-  // Cores neutras
-  white: '#FFFFFF',
-  black: '#000000',
-  gray50: '#1A1A1A',
-  gray100: '#2D2D2D',
-  gray200: '#3D3D3D',
-  gray300: '#4D4D4D',
-  gray400: '#666666',
-  gray500: '#808080',
-  gray600: '#999999',
-  gray700: '#B3B3B3',
-  gray800: '#CCCCCC',
-  gray900: '#E6E6E6',
-};
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useColorScheme } from 'react-native';
+import { COLORS, DARK_COLORS } from '@/constants/Cores';
 
 interface ThemeContextType {
   isDark: boolean;
   toggleTheme: () => void;
   colors: typeof COLORS;
+  themePreference: 'light' | 'dark' | 'system';
+  setThemePreference: (preference: 'light' | 'dark' | 'system') => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDark, setIsDark] = useState(false);
+  const [themePreference, setThemePreference] = useState<'light' | 'dark' | 'system'>('system');
+  const systemColorScheme = useColorScheme();
+
+  // Chave para AsyncStorage
+  const THEME_STORAGE_KEY = '@greensync_theme_preference';
 
   // Carregar preferência salva
   useEffect(() => {
-    // Aqui você pode carregar de AsyncStorage ou outro local
-    const savedTheme = false; // Default para claro
-    setIsDark(savedTheme);
+    loadThemePreference();
   }, []);
 
+  // Atualizar isDark baseado na preferência e no sistema
+  useEffect(() => {
+    let newIsDark = false;
+    
+    switch (themePreference) {
+      case 'light':
+        newIsDark = false;
+        break;
+      case 'dark':
+        newIsDark = true;
+        break;
+      case 'system':
+        newIsDark = systemColorScheme === 'dark';
+        break;
+      default:
+        newIsDark = false;
+    }
+    
+    setIsDark(newIsDark);
+  }, [themePreference, systemColorScheme]);
+
+  const loadThemePreference = async () => {
+    try {
+      const savedTheme = await AsyncStorage.getItem(THEME_STORAGE_KEY);
+      if (savedTheme) {
+        setThemePreference(savedTheme as 'light' | 'dark' | 'system');
+      }
+    } catch (error) {
+      console.error('Erro ao carregar tema:', error);
+    }
+  };
+
+  const saveThemePreference = async (preference: 'light' | 'dark' | 'system') => {
+    try {
+      await AsyncStorage.setItem(THEME_STORAGE_KEY, preference);
+    } catch (error) {
+      console.error('Erro ao salvar tema:', error);
+    }
+  };
+
   const toggleTheme = () => {
-    const newTheme = !isDark;
-    setIsDark(newTheme);
-    // Salvar preferência (AsyncStorage, etc.)
-    // AsyncStorage.setItem('theme', newTheme ? 'dark' : 'light');
+    const newPreference = themePreference === 'dark' ? 'light' : 'dark';
+    setThemePreference(newPreference);
+    saveThemePreference(newPreference);
+  };
+
+  const handleSetThemePreference = (preference: 'light' | 'dark' | 'system') => {
+    setThemePreference(preference);
+    saveThemePreference(preference);
   };
 
   const colors = isDark ? DARK_COLORS : COLORS;
 
   return (
-    <ThemeContext.Provider value={{ isDark, toggleTheme, colors }}>
+    <ThemeContext.Provider value={{ 
+      isDark, 
+      toggleTheme, 
+      colors,
+      themePreference,
+      setThemePreference: handleSetThemePreference
+    }}>
       {children}
     </ThemeContext.Provider>
   );
