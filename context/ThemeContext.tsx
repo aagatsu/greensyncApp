@@ -10,6 +10,7 @@ interface ThemeContextType {
   colors: typeof COLORS;
   themePreference: 'light' | 'dark' | 'system';
   setThemePreference: (preference: 'light' | 'dark' | 'system') => void;
+  isThemeLoaded: boolean; // NOVO: para controlar o carregamento
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -17,6 +18,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isDark, setIsDark] = useState(false);
   const [themePreference, setThemePreference] = useState<'light' | 'dark' | 'system'>('system');
+  const [isThemeLoaded, setIsThemeLoaded] = useState(false); // NOVO ESTADO
   const systemColorScheme = useColorScheme();
 
   // Chave para AsyncStorage
@@ -54,8 +56,10 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (savedTheme) {
         setThemePreference(savedTheme as 'light' | 'dark' | 'system');
       }
+      setIsThemeLoaded(true); // MARCA COMO CARREGADO
     } catch (error) {
       console.error('Erro ao carregar tema:', error);
+      setIsThemeLoaded(true); // MESMO COM ERRO, MARCA COMO CARREGADO
     }
   };
 
@@ -86,7 +90,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       toggleTheme, 
       colors,
       themePreference,
-      setThemePreference: handleSetThemePreference
+      setThemePreference: handleSetThemePreference,
+      isThemeLoaded // INCLUI NO CONTEXTO
     }}>
       {children}
     </ThemeContext.Provider>

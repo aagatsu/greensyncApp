@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   View, 
   Text, 
@@ -6,33 +6,58 @@ import {
   StyleSheet, 
   ScrollView,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
+import { useTheme } from '@/context/ThemeContext';
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 export default function Perfil() {
-  const { usuario, logout } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
-  const { colors } = useTheme(); // NOVO HOOK
+  const { colors } = useTheme();
+  const [carregandoLogout, setCarregandoLogout] = useState(false);
 
-  const handleLogout = () => {
-    router.push('/');
+  const handleLogout = async () => {
+    setCarregandoLogout(true);
+    
+    try {
+      const result = await logout();
+      
+      if (result.success) {
+        // Logout bem-sucedido, redireciona para tela de login
+        router.replace('/TelaLogin');
+      } else {
+        console.error("Erro no logout:", result.error);
+        // Você pode mostrar um toast ou mensagem de erro aqui se quiser
+      }
+    } catch (error) {
+      console.error("Erro inesperado no logout:", error);
+    } finally {
+      setCarregandoLogout(false);
+    }
   };
 
   const handleEditarPerfil = () => {
-    router.push('/screens/EditarPerfil')
+    router.push('/screens/EditarPerfil');
   };
 
   const handleConfiguracoes = () => {
-    router.push('/screens/Configuracoes')
+    router.push('/screens/Configuracoes');
   };
 
   const handleAjuda = () => {
-    router.push('/screens/Suporte')
+    router.push('/screens/Suporte');
+  };
+
+  // Dados do usuário do Firebase
+  const usuario = {
+    nome: user?.displayName || 'Usuário',
+    email: user?.email || 'Não informado',
+    id: user?.uid || 'N/A'
   };
 
   return (
@@ -47,8 +72,8 @@ export default function Perfil() {
             <View style={[styles.avatarContainer, { backgroundColor: colors.greenLight }]}>
               <FontAwesome5 name="user" size={40} color={colors.primary} />
             </View>
-            <Text style={[styles.nome, { color: colors.textPrimary }]}>{usuario?.nome || 'Usuário'}</Text>
-            <Text style={[styles.email, { color: colors.textSecondary }]}>{usuario?.email}</Text>
+            <Text style={[styles.nome, { color: colors.textPrimary }]}>{usuario.nome}</Text>
+            <Text style={[styles.email, { color: colors.textSecondary }]}>{usuario.email}</Text>
             <Text style={[styles.membroDesde, { color: colors.textDisabled }]}>Membro desde Jan 2024</Text>
           </View>
 
@@ -61,7 +86,7 @@ export default function Perfil() {
                 <FontAwesome5 name="envelope" size={16} color={colors.textSecondary} />
                 <View style={styles.infoContent}>
                   <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>E-mail</Text>
-                  <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{usuario?.email}</Text>
+                  <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{usuario.email}</Text>
                 </View>
               </View>
 
@@ -69,7 +94,9 @@ export default function Perfil() {
                 <FontAwesome5 name="id-card" size={16} color={colors.textSecondary} />
                 <View style={styles.infoContent}>
                   <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>ID do Usuário</Text>
-                  <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{usuario?.id || 'N/A'}</Text>
+                  <Text style={[styles.infoValue, { color: colors.textPrimary }]} numberOfLines={1} ellipsizeMode="middle">
+                    {usuario.id.substring(0, 8)}...
+                  </Text>
                 </View>
               </View>
 
@@ -143,11 +170,22 @@ export default function Perfil() {
           {/* Botão de Logout */}
           <View style={styles.section}>
             <TouchableOpacity 
-              style={[styles.logoutButton, { backgroundColor: colors.error }]} 
+              style={[
+                styles.logoutButton, 
+                { backgroundColor: colors.error },
+                carregandoLogout && { opacity: 0.7 }
+              ]} 
               onPress={handleLogout}
+              disabled={carregandoLogout}
             >
-              <FontAwesome5 name="sign-out-alt" size={18} color={colors.white} />
-              <Text style={[styles.logoutText, { color: colors.white }]}>Sair da Conta</Text>
+              {carregandoLogout ? (
+                <ActivityIndicator color={colors.white} size="small" />
+              ) : (
+                <>
+                  <FontAwesome5 name="sign-out-alt" size={18} color={colors.white} />
+                  <Text style={[styles.logoutText, { color: colors.white }]}>Sair da Conta</Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
 
@@ -162,6 +200,7 @@ export default function Perfil() {
   );
 }
 
+// Mantenha os mesmos estilos...
 const styles = StyleSheet.create({
   container: {
     flex: 1,

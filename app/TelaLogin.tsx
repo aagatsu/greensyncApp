@@ -1,3 +1,4 @@
+// TelaLogin.tsx (atualizado)
 import React, { useState } from "react";
 import {
   View,
@@ -12,7 +13,8 @@ import {
 } from "react-native";
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
+import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 type Props = {
@@ -24,14 +26,15 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
   const [senha, setSenha] = useState("");
   const [carregando, setCarregando] = useState(false);
   const router = useRouter();
-  const { colors } = useTheme(); // NOVO HOOK
+  const { colors } = useTheme();
+  const { login } = useAuth(); // NOVO HOOK
 
   const validarEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!email || !senha) {
       Alert.alert("Atenção", "Preencha todos os campos");
       return;
@@ -49,13 +52,17 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
 
     setCarregando(true);
 
-    // Simulação de processo de login
-    setTimeout(() => {
+    // Login com Firebase
+    const result = await login(email, senha);
+    setCarregando(false);
+
+    if (result.success) {
       Alert.alert("Bem-vindo!", "Login realizado com sucesso!");
-      setCarregando(false);
       onLoginSuccess?.();
       router.push('/(tabs)/TelaPrincipal');
-    }, 1500);
+    } else {
+      Alert.alert("Erro no login", result.error || "Erro desconhecido");
+    }
   };
 
   const handleCadastro = () => {
@@ -200,7 +207,14 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
         {/* Esqueci Senha */}
         <TouchableOpacity 
           style={styles.esqueciSenha}
-          onPress={() => Alert.alert("Recuperar Senha", "Funcionalidade em desenvolvimento")}
+          onPress={() => {
+            if (email && validarEmail(email)) {
+              // Implementar redefinição de senha
+              Alert.alert("Recuperar Senha", `Enviar email de recuperação para ${email}?`);
+            } else {
+              Alert.alert("Atenção", "Digite um email válido primeiro");
+            }
+          }}
           disabled={carregando}
         >
           <Text style={[styles.esqueciSenhaText, { color: colors.textSecondary }]}>
@@ -212,6 +226,7 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
   );
 }
 
+// Mantenha os mesmos estilos...
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -8,11 +8,13 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ScrollView
+  ScrollView,
+  ActivityIndicator // ADICIONE ESTA IMPORT
 } from "react-native";
 import { useRouter } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
+import { useTheme } from '@/context/ThemeContext';
+import { useAuth } from '@/context/AuthContext'; // NOVA IMPORT
 import { TYPOGRAPHY } from '@/constants/Fontes';
 
 export default function Cadastro() {
@@ -20,8 +22,10 @@ export default function Cadastro() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [carregando, setCarregando] = useState(false); // NOVO ESTADO
   const router = useRouter();
-  const { colors } = useTheme(); // NOVO HOOK
+  const { colors } = useTheme();
+  const { signup } = useAuth(); // NOVO HOOK
 
   const validarEmail = (email: string) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,17 +39,45 @@ export default function Cadastro() {
            senha === confirmarSenha;
   };
 
-  const handleCadastro = () => {
-    if (!validarFormulario()) {
-      Alert.alert("Atenção", "Preencha todos os campos corretamente");
-      return;
-    }
-    router.push('/(tabs)/TelaPrincipal')
-  };
+const handleCadastro = async () => {
+  if (!validarFormulario()) {
+    Alert.alert("Atenção", "Preencha todos os campos corretamente");
+    return;
+  }
+
+  setCarregando(true);
+
+  // Cadastro com Firebase
+  const result = await signup(email, senha, nome);
+  setCarregando(false);
+
+  if (result.success) {
+    // Redireciona automaticamente para login
+    router.push('/TelaLogin')
+    Alert.alert("Sucewsso!", "Conta criada com sucesso!", [
+      {
+        text: "OK",
+        onPress: () => {
+          // Limpa os campos
+          setNome("");
+          setEmail("");
+          setSenha("");
+          setConfirmarSenha("");
+          // Redireciona para login
+          router.push('/TelaLogin');
+        }
+      }
+    ]);
+  } else {
+    Alert.alert("Erro no cadastro", result.error || "Erro desconhecido");
+  }
+};
 
   const handleVoltarLogin = () => {
     router.push('/TelaLogin');
   };
+
+  const podeCadastrar = validarFormulario() && !carregando;
 
   return (
     <KeyboardAvoidingView
@@ -76,6 +108,7 @@ export default function Cadastro() {
               value={nome}
               onChangeText={setNome}
               maxLength={50}
+              editable={!carregando} // ADICIONADO
             />
             {nome.length > 0 && (
               <Text style={[styles.charCount, { color: colors.textDisabled }]}>
@@ -103,6 +136,7 @@ export default function Cadastro() {
               autoCorrect={false}
               value={email}
               onChangeText={setEmail}
+              editable={!carregando} // ADICIONADO
             />
           </View>
           
@@ -124,6 +158,7 @@ export default function Cadastro() {
               value={senha}
               onChangeText={setSenha}
               maxLength={20}
+              editable={!carregando} // ADICIONADO
             />
             {senha.length > 0 && (
               <Text style={[styles.charCount, { color: colors.textDisabled }]}>
@@ -150,6 +185,7 @@ export default function Cadastro() {
               value={confirmarSenha}
               onChangeText={setConfirmarSenha}
               maxLength={20}
+              editable={!carregando} // ADICIONADO
             />
           </View>
 
@@ -190,16 +226,30 @@ export default function Cadastro() {
             </Text>
           </View>
           
-          {/* Botão Cadastrar */}
+          {/* Botão Cadastrar - ATUALIZADO */}
           <TouchableOpacity 
-            style={[styles.botaoCadastrar, { backgroundColor: colors.primary }]} 
+            style={[
+              styles.botaoCadastrar, 
+              { backgroundColor: colors.primary },
+              !podeCadastrar && [
+                styles.botaoDesabilitado, 
+                { backgroundColor: colors.gray400 }
+              ]
+            ]} 
             onPress={handleCadastro}
+            disabled={!podeCadastrar}
           >
-            <FontAwesome5 name="user-plus" size={16} color={colors.white} />
-            <Text style={[styles.textoBotao, { color: colors.white }]}>Criar Conta</Text>
+            {carregando ? (
+              <ActivityIndicator color={colors.white} size="small" />
+            ) : (
+              <>
+                <FontAwesome5 name="user-plus" size={16} color={colors.white} />
+                <Text style={[styles.textoBotao, { color: colors.white }]}>Criar Conta</Text>
+              </>
+            )}
           </TouchableOpacity>
           
-          {/* Botão Voltar */}
+          {/* Botão Voltar - ATUALIZADO */}
           <TouchableOpacity 
             style={[
               styles.botaoVoltar, 
@@ -209,6 +259,7 @@ export default function Cadastro() {
               }
             ]} 
             onPress={handleVoltarLogin}
+            disabled={carregando} // ADICIONADO
           >
             <FontAwesome5 name="arrow-left" size={14} color={colors.primary} />
             <Text style={[styles.textoVoltar, { color: colors.primary }]}>Voltar para o Login</Text>
@@ -224,6 +275,7 @@ export default function Cadastro() {
   );
 }
 
+// Mantenha os mesmos estilos, apenas atualize o botaoDesabilitado:
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -308,7 +360,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   botaoDesabilitado: {
-    // Cor definida inline
+    opacity: 0.6, // ADICIONADO
   },
   textoBotao: {
     fontSize: TYPOGRAPHY.fontSize.lg,

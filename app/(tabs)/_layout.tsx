@@ -1,11 +1,26 @@
 // app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 import { FontAwesome5 } from '@expo/vector-icons';
-import { Platform } from 'react-native';
-import { useTheme } from '@/context/ThemeContext'; // NOVA IMPORT
+import { Platform, View, ActivityIndicator } from 'react-native';
+import { useTheme } from '@/context/ThemeContext';
+import { COLORS } from '@/constants/Cores'; // Importe as cores padrão para fallback
 
 export default function TabLayout() {
-  const { colors } = useTheme(); // NOVO HOOK
+  const { colors, isThemeLoaded } = useTheme();
+
+  // Se o tema ainda não carregou, mostra um loading
+  if (!isThemeLoaded) {
+    return (
+      <View style={{ 
+        flex: 1, 
+        justifyContent: 'center', 
+        alignItems: 'center',
+        backgroundColor: COLORS.background // Usa cor padrão como fallback
+      }}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <Tabs
