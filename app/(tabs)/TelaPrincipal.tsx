@@ -82,6 +82,22 @@ export default function TelaPrincipal() {
           >
             <Text style={[styles.textButtonText, { color: colors.white }]}>Controle de Ambiente</Text>
           </TouchableOpacity>
+
+          
+
+
+                  <TouchableOpacity 
+            style={[styles.textButton, { backgroundColor: colors.primary }]}
+            onPress={() => router.push('/screens/popularBancoScreen')}
+          >
+            <Text style={[styles.textButtonText, { color: colors.white }]}>Controle </Text>
+          </TouchableOpacity>
+
+
+
+
+
+
           
           <TouchableOpacity 
             style={[styles.textButton, { backgroundColor: colors.primary }]}
