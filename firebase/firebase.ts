@@ -1,6 +1,8 @@
 // config/firebase.ts
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
+import { getDatabase } from 'firebase/database';
+import { getStorage } from 'firebase/storage';
 
 // Suas configurações do Firebase
 const firebaseConfig = {
@@ -17,8 +19,10 @@ const firebaseConfig = {
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
-// Inicializar Auth (o Firebase gerencia automaticamente a persistência)
+// Inicializar serviços do Firebase
 const auth = getAuth(app);
+const database = getDatabase(app); // Realtime Database
+const storage = getStorage(app);
 
-export { auth };
+export { auth, database, storage };
 export default app;

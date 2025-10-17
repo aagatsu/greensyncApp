@@ -104,14 +104,6 @@ export default function IndexPage() {
             <Text style={styles.registerButtonText}>Criar Nova Conta</Text>
             <FontAwesome5 name="arrow-right" size={14} color={COLORS.primary} />
           </TouchableOpacity>
-
-          {/* Acesso Rápido */}
-          <TouchableOpacity 
-            style={styles.guestButton}
-            onPress={() => router.push('/(tabs)/TelaPrincipal')}
-          >
-            <Text style={styles.guestText}>Explorar como visitante</Text>
-          </TouchableOpacity>
         </View>
 
         {/* Rodapé */}

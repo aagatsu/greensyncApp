@@ -193,17 +193,6 @@ export default function TelaLogin({ onLoginSuccess }: Props) {
           <Text style={[styles.textoCadastro, { color: colors.white }]}>Criar Nova Conta</Text>
         </TouchableOpacity>
 
-        {/* Acesso Rápido */}
-        <TouchableOpacity 
-          style={styles.acessoRapido}
-          onPress={handleAcessoSemLogin}
-          disabled={carregando}
-        >
-          <Text style={[styles.acessoRapidoText, { color: colors.primary }]}>
-            Acessar sem fazer login
-          </Text>
-        </TouchableOpacity>
-
         {/* Esqueci Senha */}
         <TouchableOpacity 
           style={styles.esqueciSenha}
